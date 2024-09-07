@@ -1,15 +1,18 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 
+import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
 import { ContentType } from '../../file-storage/enums/content-type.enum';
 import { FileStorageService } from '../../file-storage/services/file-storage.service';
 import { UserRepository } from '../../repository/services/user.repository';
+import { UpdateBalanceDto } from '../dto/req/update-balance.dto';
 import { UpdateUserDto } from '../dto/req/update-user.dto';
 
 @Injectable()
@@ -29,8 +32,50 @@ export class UsersService {
     dto: UpdateUserDto,
   ): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id: userData.userId });
+    if (!user) {
+      throw new NotFoundException('The user does not exist!');
+    }
     this.userRepository.merge(user, dto);
     return await this.userRepository.save(user);
+  }
+
+  public async addBalanceMe(
+    userData: IUserData,
+    dto: UpdateBalanceDto,
+  ): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userData.userId });
+    if (!user) {
+      throw new NotFoundException('The user does not exist!');
+    }
+    await this.userRepository.increment(
+      { id: user.id },
+      'balance',
+      dto.balance,
+    );
+  }
+
+  public async getPremium(userData: IUserData, sum: number): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userData.userId });
+    if (!user || user.account === 'premium') {
+      throw new NotFoundException('The user does not exist!');
+    }
+    if (user.balance < sum) {
+      throw new BadRequestException('Balance is low!');
+    }
+    await this.userRepository.decrement({ id: user.id }, 'balance', sum);
+    await this.userRepository.update(user.id, {
+      account: AccountTypeEnum.PREMIUM,
+    });
+  }
+
+  public async getBasic(userData: IUserData): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userData.userId });
+    if (!user || user.account === 'basic') {
+      throw new NotFoundException('The user does not exist!');
+    }
+    await this.userRepository.update(user.id, {
+      account: AccountTypeEnum.BASIC,
+    });
   }
 
   public async removeMe(userData: IUserData): Promise<void> {

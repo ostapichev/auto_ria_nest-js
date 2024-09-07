@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Put,
   UploadedFile,
@@ -28,6 +29,7 @@ import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
+import { UpdateBalanceDto } from './dto/req/update-balance.dto';
 import { UpdateUserDto } from './dto/req/update-user.dto';
 import { UserResDto } from './dto/res/user.res.dto';
 import { UserMapper, UsersService } from './services';
@@ -59,6 +61,42 @@ export class UsersController {
   ): Promise<UserResDto> {
     const result = await this.usersService.updateMe(userData, dto);
     return UserMapper.toResponseDTO(result);
+  }
+
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiConflictResponse({ description: 'Conflict' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @Patch('me/balance')
+  public async addBalance(
+    @CurrentUser() userData: IUserData,
+    @Body() dto: UpdateBalanceDto,
+  ): Promise<string> {
+    await this.usersService.addBalanceMe(userData, dto);
+    return `Balance ${dto.balance} UAH added!`;
+  }
+
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiConflictResponse({ description: 'Conflict' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @Patch('me/premium_account')
+  public async getPremium(@CurrentUser() userData: IUserData): Promise<string> {
+    await this.usersService.getPremium(userData, 500);
+    return `Premium account took!`;
+  }
+
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiConflictResponse({ description: 'Conflict' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @Patch('me/basic_account')
+  public async getBasic(@CurrentUser() userData: IUserData): Promise<string> {
+    await this.usersService.getBasic(userData);
+    return `Basic account took!`;
   }
 
   @ApiBearerAuth()
