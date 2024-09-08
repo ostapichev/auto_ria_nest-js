@@ -32,6 +32,7 @@ import { IUserData } from '../auth/interfaces/user-data.interface';
 import { UpdateBalanceDto } from './dto/req/update-balance.dto';
 import { UpdateUserDto } from './dto/req/update-user.dto';
 import { UserResDto } from './dto/res/user.res.dto';
+import { UserResPublicDto } from './dto/res/user.res-public.dto';
 import { UserMapper } from './services/user.mapper';
 import { UsersService } from './services/users.service';
 
@@ -135,8 +136,8 @@ export class UsersController {
   @Get(':userId')
   public async findOne(
     @Param('userId', ParseUUIDPipe) userId: string,
-  ): Promise<UserResDto> {
+  ): Promise<UserResPublicDto> {
     const result = await this.usersService.findOne(userId);
-    return UserMapper.toResponseDTO(result);
+    return UserMapper.toResponsePublicDTO(result);
   }
 }
