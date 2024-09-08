@@ -31,8 +31,9 @@ export class AuthService {
     const password = await bcrypt.hash(dto.password, 10);
     const role = UserRoleEnum.USER_BUY;
     const account = AccountTypeEnum.BASIC;
+    const status = true;
     const user = await this.userRepository.save(
-      this.userRepository.create({ ...dto, password, role, account }),
+      this.userRepository.create({ ...dto, password, role, account, status }),
     );
     const tokens = await this.tokenService.generateAuthTokens({
       userId: user.id,
@@ -57,10 +58,10 @@ export class AuthService {
   public async signIn(dto: SignInReqDto): Promise<AuthResDto> {
     const user = await this.userRepository.findOne({
       where: { email: dto.email },
-      select: { id: true, password: true },
+      select: { id: true, password: true, status: true },
     });
-    if (!user) {
-      throw new UnauthorizedException();
+    if (!user || !user.status) {
+      throw new UnauthorizedException('The user does not exist or is blocked');
     }
     const isPasswordValid = bcrypt.compare(dto.password, user.password);
     if (!isPasswordValid) {

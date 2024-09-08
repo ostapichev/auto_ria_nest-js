@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsNumber,
   IsOptional,
   IsString,
@@ -63,4 +64,8 @@ export class BaseUserReqDto {
   @IsNumber()
   @Type(() => Number)
   balance?: number;
+
+  @ApiProperty()
+  @IsBoolean()
+  status?: boolean;
 }

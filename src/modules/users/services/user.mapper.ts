@@ -16,6 +16,7 @@ export class UserMapper {
       role: data.role,
       account: data.account,
       balance: Number(data.balance),
+      status: true,
       createdAt: data.created,
       updatedAt: data.updated,
     };

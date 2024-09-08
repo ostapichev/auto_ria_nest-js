@@ -32,6 +32,9 @@ export class UserEntity extends CreateUpdateModel {
   @Column('float', { nullable: true })
   balance?: number | null;
 
+  @Column('boolean')
+  status?: boolean;
+
   @OneToMany(() => RefreshTokenEntity, (entity) => entity.user)
   refreshTokens?: RefreshTokenEntity[];
 }

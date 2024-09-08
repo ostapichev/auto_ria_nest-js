@@ -10,6 +10,7 @@ export class BaseUserResDto {
   role: UserRoleEnum;
   account: AccountTypeEnum;
   balance?: number;
+  status?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
