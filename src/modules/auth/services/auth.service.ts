@@ -5,7 +5,8 @@ import { AccountTypeEnum } from '../../../database/entities/enums/account-type.e
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
-import { UserMapper, UsersService } from '../../users/services';
+import { UserMapper } from '../../users/services/user.mapper';
+import { UsersService } from '../../users/services/users.service';
 import { SignInReqDto } from '../dto/req/sign-in.req.dto';
 import { SignUpReqDto } from '../dto/req/sign-up.req.dto';
 import { AuthResDto } from '../dto/res/auth.res.dto';

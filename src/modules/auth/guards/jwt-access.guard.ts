@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 
 import { UserRepository } from '../../repository/services/user.repository';
-import { UserMapper } from '../../users/services';
+import { UserMapper } from '../../users/services/user.mapper';
 import { TokenType } from '../enums/token-type.enum';
 import { AuthCacheService } from '../services/auth-cache.service';
 import { TokenService } from '../services/token.service';

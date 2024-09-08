@@ -1,10 +1,18 @@
 export type Config = {
+  superuser: SuperUserConfig;
   app: AppConfig;
   postgres: PostgresConfig;
   redis: RedisConfig;
   sentry: SentryConfig;
   jwt: JwtConfig;
   aws: AwsConfig;
+};
+
+export type SuperUserConfig = {
+  name: string;
+  phone: string;
+  email: string;
+  password: string;
 };
 
 export type AppConfig = {

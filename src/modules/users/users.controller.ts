@@ -32,7 +32,8 @@ import { IUserData } from '../auth/interfaces/user-data.interface';
 import { UpdateBalanceDto } from './dto/req/update-balance.dto';
 import { UpdateUserDto } from './dto/req/update-user.dto';
 import { UserResDto } from './dto/res/user.res.dto';
-import { UserMapper, UsersService } from './services';
+import { UserMapper } from './services/user.mapper';
+import { UsersService } from './services/users.service';
 
 @ApiTags('Users')
 @Controller('users')

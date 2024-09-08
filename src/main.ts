@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppConfig } from './config/config.type';
 import { AppModule } from './modules/app.module';
+import { SuperUserService } from './modules/users/services/super-user.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -36,7 +37,9 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  await app.listen(appConfig.port, () => {
+  await app.listen(appConfig.port, async () => {
+    const superuser = app.get<SuperUserService>(SuperUserService);
+    await superuser.createSuperUser();
     Logger.log(`Server running on http://${appConfig.host}:${appConfig.port}`);
     Logger.log(
       `Swagger running on http://${appConfig.host}:${appConfig.port}/docs`,

@@ -1,6 +1,14 @@
+import * as process from 'node:process';
+
 import { Config } from './config.type';
 
 export default (): Config => ({
+  superuser: {
+    name: process.env.SUPER_USER_NAME,
+    phone: process.env.SUPER_USER_PHONE,
+    email: process.env.SUPER_USER_EMAIL,
+    password: process.env.SUPER_USER_PASSWORD,
+  },
   app: {
     port: Number(process.env.APP_PORT) || 3000,
     host: process.env.APP_HOST || 'localhost',
