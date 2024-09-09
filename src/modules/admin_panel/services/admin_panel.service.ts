@@ -6,6 +6,7 @@ import {
 
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { UserEntity } from '../../../database/entities/user.entity';
+import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { UserRepository } from '../../repository/services/user.repository';
 
 @Injectable()
@@ -58,5 +59,41 @@ export class AdminPanelService {
         role: UserRoleEnum.USER_SALE,
       });
     }
+  }
+
+  public async banUser(userId: string, userData: IUserData): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException('The user does not exist!');
+    }
+    if (user.role === UserRoleEnum.ADMIN || UserRoleEnum.SUPERUSER) {
+      if (userData.role === UserRoleEnum.ADMIN) {
+        throw new BadRequestException('You do not have permissions!');
+      }
+    }
+    if (!user.status) {
+      throw new BadRequestException('The user is banned!');
+    }
+    await this.userRepository.update(userId, {
+      status: false,
+    });
+  }
+
+  public async unbanUser(userId: string, userData: IUserData): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException('The user does not exist!');
+    }
+    if (user.role === UserRoleEnum.ADMIN || UserRoleEnum.SUPERUSER) {
+      if (userData.role === UserRoleEnum.ADMIN) {
+        throw new BadRequestException('You do not have permissions!');
+      }
+    }
+    if (user.status) {
+      throw new BadRequestException('The user is active!');
+    }
+    await this.userRepository.update(userId, {
+      status: true,
+    });
   }
 }

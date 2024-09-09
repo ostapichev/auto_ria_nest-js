@@ -15,6 +15,8 @@ import {
 } from '@nestjs/swagger';
 
 import { UserEntity } from '../../database/entities/user.entity';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { IUserData } from '../auth/interfaces/user-data.interface';
 import { AdminGuard } from './guards/admin.guard';
 import { IdMeGuard } from './guards/id-me.guard';
 import { SuperUserGuard } from './guards/superuser.guard';
@@ -60,5 +62,27 @@ export class AdminPanelController {
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<void> {
     await this.adminPanelService.toUser(userId);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseGuards(AdminGuard, IdMeGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch('ban/:userId')
+  public async banUser(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @CurrentUser() userData: IUserData,
+  ): Promise<void> {
+    await this.adminPanelService.banUser(userId, userData);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseGuards(AdminGuard, IdMeGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch('unban/:userId')
+  public async unbanUser(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @CurrentUser() userData: IUserData,
+  ): Promise<void> {
+    await this.adminPanelService.unbanUser(userId, userData);
   }
 }
