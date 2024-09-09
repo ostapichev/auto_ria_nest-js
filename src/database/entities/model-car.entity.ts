@@ -1,0 +1,17 @@
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+
+import { BrandCarEntity } from './brand-car.entity';
+import { TableNameEnum } from './enums/table-name.enum';
+import { CreateUpdateModel } from './models';
+
+@Entity(TableNameEnum.MODELS)
+export class ModelCarEntity extends CreateUpdateModel {
+  @Column('text')
+  name?: string;
+
+  @Column()
+  brand_id: string;
+  @ManyToOne(() => BrandCarEntity, (entity) => entity.models)
+  @JoinColumn({ name: 'brand_id' })
+  brand?: BrandCarEntity;
+}

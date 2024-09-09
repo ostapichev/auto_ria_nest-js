@@ -6,6 +6,7 @@ import { GlobalExceptionFilter } from '../common/http/global-exception.filter';
 import configuration from '../config/configuration';
 import { AdminPanelModule } from './admin_panel/admin_panel.module';
 import { AuthModule } from './auth/auth.module';
+import { CarsModule } from './cars/cars.module';
 import { FileStorageModule } from './file-storage/file-storage.module';
 import { LoggerModule } from './logger/logger.module';
 import { PostgresModule } from './postgres/postgres.module';
@@ -21,6 +22,7 @@ import { UsersModule } from './users/users.module';
     }),
     AdminPanelModule,
     AuthModule,
+    CarsModule,
     PostgresModule,
     UsersModule,
     LoggerModule,

@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 
+import { CarEntity } from './car.entity';
 import { AccountTypeEnum } from './enums/account-type.enum';
 import { TableNameEnum } from './enums/table-name.enum';
 import { UserRoleEnum } from './enums/user-role.enum';
@@ -34,6 +35,9 @@ export class UserEntity extends CreateUpdateModel {
 
   @Column('boolean')
   status?: boolean;
+
+  @OneToMany(() => CarEntity, (entity) => entity.user)
+  cars?: CarEntity[];
 
   @OneToMany(() => RefreshTokenEntity, (entity) => entity.user)
   refreshTokens?: RefreshTokenEntity[];

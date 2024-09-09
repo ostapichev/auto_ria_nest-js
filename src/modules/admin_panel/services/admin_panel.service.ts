@@ -14,7 +14,9 @@ export class AdminPanelService {
   constructor(private readonly userRepository: UserRepository) {}
 
   public async findAllUsers(): Promise<UserEntity[]> {
-    return await this.userRepository.find();
+    return await this.userRepository.find({
+      relations: { cars: true },
+    });
   }
 
   public async findOne(userId: string): Promise<UserEntity> {
