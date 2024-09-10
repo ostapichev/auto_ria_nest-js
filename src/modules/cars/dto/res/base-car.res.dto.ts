@@ -44,12 +44,6 @@ export class BaseCarResDto {
   year: number;
 
   @ApiProperty({
-    example: '0',
-    description: 'Car views',
-  })
-  count_view: number;
-
-  @ApiProperty({
     example: true,
     description: 'Active',
   })

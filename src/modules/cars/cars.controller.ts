@@ -4,9 +4,11 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -21,6 +23,8 @@ import { CarListQueryDto } from './dto/req/car-list.query.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
 import { UpdateCarDto } from './dto/req/update-car.dto';
 import { CarListResDto } from './dto/res/car-list.res.dto';
+import { CarListItemResDto } from './dto/res/car-list-item.res.dto';
+import { PremiumGuard } from './guards/premium.guard';
 import { CarMapper } from './services/car.mapper';
 import { CarsService } from './services/cars.service';
 
@@ -39,6 +43,7 @@ export class CarsController {
     const result = await this.carsService.create(userData, dto);
     return CarMapper.toResponseDTO(result);
   }
+
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get('user_car')
@@ -62,9 +67,24 @@ export class CarsController {
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.carsService.findOne(+id);
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @Get(':carId')
+  public async findOneCar(
+    @Param('carId', ParseUUIDPipe) carId: string,
+  ): Promise<CarListItemResDto> {
+    const result = await this.carsService.findOneCar(carId);
+    return CarMapper.toResponseListItemDTO(result);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @UseGuards(PremiumGuard)
+  @Get(':carId/views')
+  public async getCountViews(
+    @Param('carId', ParseUUIDPipe) carId: string,
+  ): Promise<number> {
+    return await this.carsService.getCountViews(carId);
   }
 
   @Patch(':id')
