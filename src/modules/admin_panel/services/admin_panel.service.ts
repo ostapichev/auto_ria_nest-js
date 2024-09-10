@@ -35,10 +35,7 @@ export class AdminPanelService {
     if (user.role === UserRoleEnum.ADMIN) {
       throw new BadRequestException('The user is admin!');
     }
-    if (
-      user.role === UserRoleEnum.USER_BUY ||
-      user.role === UserRoleEnum.USER_SALE
-    ) {
+    if (user.role === UserRoleEnum.BUYER || user.role === UserRoleEnum.SELLER) {
       await this.userRepository.update(userId, {
         role: UserRoleEnum.ADMIN,
       });
@@ -50,15 +47,12 @@ export class AdminPanelService {
     if (!user) {
       throw new NotFoundException('The user does not exist!');
     }
-    if (
-      user.role === UserRoleEnum.USER_SALE ||
-      user.role === UserRoleEnum.USER_BUY
-    ) {
+    if (user.role === UserRoleEnum.SELLER || user.role === UserRoleEnum.BUYER) {
       throw new BadRequestException('The user is no admin!');
     }
     if (user.role === UserRoleEnum.ADMIN) {
       await this.userRepository.update(userId, {
-        role: UserRoleEnum.USER_SALE,
+        role: UserRoleEnum.SELLER,
       });
     }
   }

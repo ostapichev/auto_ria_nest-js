@@ -5,4 +5,5 @@ export enum TableNameEnum {
   BRANDS = 'brands',
   MODELS = 'models',
   CITIES = 'cities',
+  CAR_VIEWS = 'car_views',
 }

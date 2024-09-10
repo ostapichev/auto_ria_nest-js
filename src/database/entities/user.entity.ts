@@ -24,16 +24,16 @@ export class UserEntity extends CreateUpdateModel {
   @Column('text', { select: false })
   password: string;
 
-  @Column('text')
+  @Column('text', { default: UserRoleEnum.BUYER })
   role?: UserRoleEnum;
 
-  @Column('text')
+  @Column('text', { default: AccountTypeEnum.BASIC })
   account?: AccountTypeEnum;
 
-  @Column('float', { nullable: true })
-  balance?: number | null;
+  @Column('float', { default: 0 })
+  balance?: number;
 
-  @Column('boolean')
+  @Column('boolean', { default: true })
   status?: boolean;
 
   @OneToMany(() => CarEntity, (entity) => entity.user)

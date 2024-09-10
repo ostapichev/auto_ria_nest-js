@@ -1,8 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
-import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UserMapper } from '../../users/services/user.mapper';
@@ -29,11 +27,8 @@ export class AuthService {
     await this.userService.isEmailExistOrThrow(dto.email);
     await this.userService.isPhoneExistOrThrow(dto.phone);
     const password = await bcrypt.hash(dto.password, 10);
-    const role = UserRoleEnum.USER_BUY;
-    const account = AccountTypeEnum.BASIC;
-    const status = true;
     const user = await this.userRepository.save(
-      this.userRepository.create({ ...dto, password, role, account, status }),
+      this.userRepository.create({ ...dto, password }),
     );
     const tokens = await this.tokenService.generateAuthTokens({
       userId: user.id,

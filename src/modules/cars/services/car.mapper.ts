@@ -40,7 +40,6 @@ export class CarMapper {
       color: entity.color,
       price: entity.price,
       year: entity.year,
-      count_view: entity.count_view,
       active: entity.active,
       created: entity.created,
       updated: entity.updated,

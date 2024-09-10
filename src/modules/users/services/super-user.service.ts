@@ -32,7 +32,6 @@ export class SuperUserService {
         password: await bcrypt.hash(config.password, 10),
         role: UserRoleEnum.SUPERUSER,
         account: AccountTypeEnum.PREMIUM,
-        status: true,
       });
       Logger.log('Super user created!');
       return user;

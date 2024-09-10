@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 import { BrandCarEntity } from './brand-car.entity';
+import { CarViewsEntity } from './car-views.entity';
 import { CityEntity } from './city.entity';
 import { TableNameEnum } from './enums/table-name.enum';
 import { ModelCarEntity } from './model-car.entity';
@@ -27,10 +28,7 @@ export class CarEntity extends CreateUpdateModel {
   @Column('int')
   year: number;
 
-  @Column('int', { nullable: true })
-  count_view?: number;
-
-  @Column('boolean', { nullable: true })
+  @Column('boolean', { default: true })
   active?: boolean;
 
   @Column('string', { nullable: true })
@@ -56,4 +54,7 @@ export class CarEntity extends CreateUpdateModel {
   @ManyToOne(() => UserEntity, (entity) => entity.cars)
   @JoinColumn({ name: 'user_id' })
   user?: UserEntity;
+
+  @OneToOne(() => CarViewsEntity, (carViews) => carViews.car)
+  views?: CarViewsEntity;
 }
