@@ -8,6 +8,7 @@ import { CarViewsRepository } from '../../repository/services/car-viwes.reposito
 import { CarListQueryDto } from '../dto/req/car-list.query.dto';
 import { CreateCarReqDto } from '../dto/req/create-car.dto';
 import { UpdateCarDto } from '../dto/req/update-car.dto';
+import { IParams } from '../interfaces/params.interface';
 
 @Injectable()
 export class CarsService {
@@ -19,11 +20,15 @@ export class CarsService {
   public async create(
     userData: IUserData,
     dto: CreateCarReqDto,
+    params: IParams
   ): Promise<CarEntity> {
     return await this.carRepository.save(
       this.carRepository.create({
         ...dto,
         user_id: userData.userId,
+        city_id: params.cityId,
+        brand_id: params.brandId,
+        model_id: params.modelId,
         active: true,
       }),
     );

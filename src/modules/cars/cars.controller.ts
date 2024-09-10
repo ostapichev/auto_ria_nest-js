@@ -35,12 +35,16 @@ export class CarsController {
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
-  @Post()
+  @Post(':cityId/:brandId/:modelId')
   public async create(
     @CurrentUser() userData: IUserData,
     @Body() dto: CreateCarReqDto,
+    @Param('cityId', ParseUUIDPipe) cityId: string,
+    @Param('brandId', ParseUUIDPipe) brandId: string,
+    @Param('modelId', ParseUUIDPipe) modelId: string,
   ): Promise<CreateCarReqDto> {
-    const result = await this.carsService.create(userData, dto);
+    const params = { cityId, brandId, modelId };
+    const result = await this.carsService.create(userData, dto, params);
     return CarMapper.toResponseDTO(result);
   }
 
