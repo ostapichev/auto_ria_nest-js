@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -6,6 +7,7 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -14,9 +16,16 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
+import { ModelCarEntity } from '../../database/entities/model-car.entity';
 import { UserEntity } from '../../database/entities/user.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
+import { BaseBrandReqDto } from './dto/req/base-brand.req.dto';
+import { BaseCityReqDto } from './dto/req/base-city.req.dto';
+import { BaseModelReqDto } from './dto/req/base-model.req.dto';
+import { BaseBrandResDto } from './dto/res/base-brand.res.dto';
+import { BaseCityResDto } from './dto/res/base-city.res.dto';
+import { BaseModelResDto } from './dto/res/base-model.res.dto';
 import { AdminGuard } from './guards/admin.guard';
 import { IdMeGuard } from './guards/id-me.guard';
 import { SuperUserGuard } from './guards/superuser.guard';
@@ -84,5 +93,31 @@ export class AdminPanelController {
     @CurrentUser() userData: IUserData,
   ): Promise<void> {
     await this.adminPanelService.unbanUser(userId, userData);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseGuards(AdminGuard)
+  @Post('add-city')
+  public async addCity(@Body() dto: BaseCityReqDto): Promise<BaseCityResDto> {
+    return await this.adminPanelService.addCity(dto);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseGuards(AdminGuard)
+  @Post('add-brand')
+  public async addCarBrand(
+    @Body() dto: BaseBrandReqDto,
+  ): Promise<BaseBrandResDto> {
+    return await this.adminPanelService.addCarBrand(dto);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseGuards(AdminGuard)
+  @Post(':brandId/add-model')
+  public async addCarModel(
+    @Body() dto: BaseModelReqDto,
+    @Param('brandId', ParseUUIDPipe) brandId: string,
+  ): Promise<BaseModelResDto> {
+    return await this.adminPanelService.addCarModel(dto, brandId);
   }
 }

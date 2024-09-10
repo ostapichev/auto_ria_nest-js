@@ -34,7 +34,6 @@ export class AuthService {
       userId: user.id,
       deviceId: dto.deviceId,
     });
-
     await Promise.all([
       this.refreshTokenRepository.save({
         deviceId: dto.deviceId,

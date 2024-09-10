@@ -88,9 +88,7 @@ export class CarsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCarDto: UpdateCarDto) {
-    return this.carsService.update(+id, updateCarDto);
-  }
+  update(@Param('id') id: string, @Body() updateCarDto: UpdateCarDto) {}
 
   @Delete(':id')
   remove(@Param('id') id: string) {

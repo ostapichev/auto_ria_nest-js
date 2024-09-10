@@ -26,7 +26,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document, {
     swaggerOptions: {
       docExpansion: 'list',
-      defaultModelsExpandDepth: 7,
+      defaultModelsExpandDepth: 2,
       persistAuthorization: true,
     },
   });

@@ -25,6 +25,12 @@ export class BaseCarResDto {
   })
   description: string;
 
+  @ApiProperty({ example: 'Car brand' })
+  brand: string;
+
+  @ApiProperty({ example: 'Car model' })
+  model: string;
+
   @ApiProperty({
     example: 'Car color',
     description: 'Car color',

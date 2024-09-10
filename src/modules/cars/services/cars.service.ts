@@ -53,9 +53,7 @@ export class CarsService {
     return countViews.viewsCount;
   }
 
-  update(id: number, updateCarDto: UpdateCarDto) {
-    return `This action updates a #${id} car`;
-  }
+  public async updateCar(carId: string, updateCarDto: UpdateCarDto) {}
 
   remove(id: number) {
     return `This action removes a #${id} car`;
