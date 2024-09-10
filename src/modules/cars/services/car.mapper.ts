@@ -37,8 +37,6 @@ export class CarMapper {
       photo: entity.photo ? `${awsConfig.bucketUrl}/${entity.photo}` : null,
       title: entity.title,
       description: entity.description,
-      brand: entity.brand,
-      model: entity.model,
       color: entity.color,
       price: entity.price,
       year: entity.year,

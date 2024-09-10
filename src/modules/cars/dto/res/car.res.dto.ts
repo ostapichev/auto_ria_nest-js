@@ -7,8 +7,6 @@ export class CarResDto extends PickType(BaseCarResDto, [
   'photo',
   'title',
   'description',
-  'brand',
-  'model',
   'color',
   'price',
   'year',
