@@ -40,6 +40,7 @@ export class CarMapper {
       brand: entity.brand,
       model: entity.model,
       color: entity.color,
+      price: entity.price,
       year: entity.year,
       count_view: entity.count_view,
       active: entity.active,

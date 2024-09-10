@@ -10,6 +10,7 @@ export class CarResDto extends PickType(BaseCarResDto, [
   'brand',
   'model',
   'color',
+  'price',
   'year',
   'count_view',
   'active',

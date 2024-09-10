@@ -44,7 +44,13 @@ export class BaseCarResDto {
   color: string;
 
   @ApiProperty({
-    example: '2020',
+    example: 10000,
+    description: 'Car price',
+  })
+  price: number;
+
+  @ApiProperty({
+    example: 2020,
     description: 'Car made year',
   })
   year: number;

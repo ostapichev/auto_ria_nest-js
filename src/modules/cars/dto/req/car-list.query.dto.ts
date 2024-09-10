@@ -13,9 +13,9 @@ export class CarListQueryDto {
 
   @Type(() => Number)
   @IsInt()
-  @Min(0)
+  @Min(1)
   @IsOptional()
-  offset?: number = 0;
+  page?: number = 1;
 
   @Transform(TransformHelper.trim)
   @Transform(TransformHelper.toLowerCase)

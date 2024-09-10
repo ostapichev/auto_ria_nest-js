@@ -21,8 +21,9 @@ export class CarRepository extends Repository<CarEntity> {
       qb.andWhere('CONCAT(car.brand, article.model) ILIKE :search');
       qb.setParameter('search', `%${query.search}%`);
     }
+    qb.orderBy('car.created', 'DESC');
     qb.take(query.limit);
-    qb.skip(query.offset);
+    qb.skip((query.page - 1) * query.limit);
     return await qb.getManyAndCount();
   }
 
@@ -35,7 +36,7 @@ export class CarRepository extends Repository<CarEntity> {
       qb.setParameter('search', `%${query.search}%`);
     }
     qb.take(query.limit);
-    qb.skip(query.offset);
+    qb.skip((query.page - 1) * query.limit);
     return await qb.getManyAndCount();
   }
 

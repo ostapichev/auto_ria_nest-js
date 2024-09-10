@@ -53,7 +53,14 @@ export class BaseCarReqDto {
   @Type(() => String)
   color: string;
 
-  @ApiProperty({ example: '2021' })
+  @ApiProperty({ example: 20000 })
+  @IsNumber()
+  @Min(1)
+  @Max(1000000)
+  @Type(() => Number)
+  price: number;
+
+  @ApiProperty({ example: 2021 })
   @IsNumber()
   @Min(1990)
   @Max(new Date().getFullYear())
