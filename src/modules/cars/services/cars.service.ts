@@ -77,6 +77,14 @@ export class CarsService {
     });
   }
 
+  public async getAvgPrice(): Promise<number> {
+    return await this.carRepository.getAVGPrice();
+  }
+
+  public async getAvgPriceCity(cityId: string): Promise<number> {
+    return await this.carRepository.getAVGPriceCity(cityId);
+  }
+
   public async getListAllModels(brandId: string): Promise<ModelCarEntity[]> {
     return await this.modelRepository.find({
       where: { brand_id: brandId },

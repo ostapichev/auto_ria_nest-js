@@ -90,6 +90,14 @@ export class CarsController {
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
+  @UseGuards(PremiumGuard)
+  @Get('avg_price')
+  public async getAvgPrice(): Promise<number> {
+    return await this.carsService.getAvgPrice();
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
   @Get(':brandId/models')
   public async getListAllModels(
     @Param('brandId', ParseUUIDPipe) brandId: string,
@@ -115,6 +123,16 @@ export class CarsController {
     @Param('carId', ParseUUIDPipe) carId: string,
   ): Promise<number> {
     return await this.carsService.getCountViews(carId);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @UseGuards(PremiumGuard)
+  @Get(':cityId/avg_price_city')
+  public async getAvgPriceCity(
+    @Param('cityId', ParseUUIDPipe) cityId: string,
+  ): Promise<number> {
+    return await this.carsService.getAvgPriceCity(cityId);
   }
 
   @Patch(':id')

@@ -25,6 +25,9 @@ export class CarMapper {
       photo: entity.photo ? `${awsConfig.bucketUrl}/${entity.photo}` : null,
       title: entity.title,
       description: entity.description,
+      city: entity.city_id,
+      brand: entity.brand_id,
+      model: entity.model_id,
       created: entity.created,
       user_id: entity.user_id,
     };

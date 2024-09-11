@@ -40,6 +40,21 @@ export class CarRepository extends Repository<CarEntity> {
     return await qb.getManyAndCount();
   }
 
+  public async getAVGPrice(): Promise<number> {
+    const qb = this.createQueryBuilder('car');
+    qb.select('ROUND(AVG(car.price), 2)', 'avgPrice');
+    const result = await qb.getRawOne();
+    return result.avgPrice;
+  }
+
+  public async getAVGPriceCity(cityId: string): Promise<number> {
+    const qb = this.createQueryBuilder('car');
+    qb.select('ROUND(AVG(car.price), 2)', 'avgPrice');
+    qb.where('car.city_id = :cityId', { cityId });
+    const result = await qb.getRawOne();
+    return result.avgPrice;
+  }
+
   public async getById(userId: string, carId: string): Promise<CarEntity> {
     const qb = this.createQueryBuilder('car');
     qb.leftJoinAndSelect('car.user', 'user');
