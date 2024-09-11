@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class BaseCarResDto {
   @ApiProperty({
     example: '796cea24-a328-4463-a5e1-85a779e4780f',
-    description: 'Article ID',
+    description: 'Car id',
   })
   id: string;
 

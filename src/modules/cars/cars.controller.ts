@@ -16,6 +16,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
+import { BrandCarEntity } from '../../database/entities/brand-car.entity';
+import { CityEntity } from '../../database/entities/city.entity';
+import { ModelCarEntity } from '../../database/entities/model-car.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
@@ -69,6 +72,29 @@ export class CarsController {
   ): Promise<CarListResDto> {
     const [entities, total] = await this.carsService.getListAllCars(query);
     return CarMapper.toResponseListDTO(entities, total, query);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @Get('cities')
+  public async getListAllCities(): Promise<CityEntity[]> {
+    return await this.carsService.getListAllCities();
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @Get('brands')
+  public async getListAllBrands(): Promise<BrandCarEntity[]> {
+    return await this.carsService.getListAllBrands();
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @Get(':brandId/models')
+  public async getListAllModels(
+    @Param('brandId', ParseUUIDPipe) brandId: string,
+  ): Promise<ModelCarEntity[]> {
+    return await this.carsService.getListAllModels(brandId);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
