@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 
 import { TransformHelper } from '../../../../common/helpers/transform.helper';
+import { CurrencyEnum } from '../../enums/currency.enum';
 
 export class BaseCarReqDto {
   @ApiProperty({ example: 'http://localhost:3000/images/car_photo.png' })
@@ -56,9 +57,14 @@ export class BaseCarReqDto {
   @ApiProperty({ example: 20000 })
   @IsNumber()
   @Min(1)
-  @Max(1000000)
+  @Max(100000000)
   @Type(() => Number)
   price: number;
+
+  @ApiProperty({ example: 'USD' })
+  @IsString()
+  @Type(() => String)
+  currency: CurrencyEnum;
 
   @ApiProperty({ example: 2021 })
   @IsNumber()

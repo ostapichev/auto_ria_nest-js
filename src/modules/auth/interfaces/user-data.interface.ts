@@ -1,3 +1,4 @@
+import { CarEntity } from '../../../database/entities/car.entity';
 import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 
@@ -7,4 +8,5 @@ export interface IUserData {
   email: string;
   role: UserRoleEnum;
   account: AccountTypeEnum;
+  cars: CarEntity[];
 }

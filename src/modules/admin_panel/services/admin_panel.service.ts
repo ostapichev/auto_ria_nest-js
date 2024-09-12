@@ -151,6 +151,10 @@ export class AdminPanelService {
     dto: BaseModelReqDto,
     brandId: string,
   ): Promise<BaseModelResDto> {
+    const brand = await this.brandRepository.findOneBy({ id: brandId });
+    if (!brand) {
+      throw new NotFoundException('The brand does not exist!');
+    }
     return await this.modelRepository.save(
       this.modelRepository.create({
         brand_id: brandId,

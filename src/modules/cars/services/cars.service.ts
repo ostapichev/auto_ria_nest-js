@@ -1,14 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException, ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { BrandCarEntity } from '../../../database/entities/brand-car.entity';
-import { CarEntity } from '../../../database/entities/car.entity';
 import { CarViewsEntity } from '../../../database/entities/car-views.entity';
+import { CarEntity } from '../../../database/entities/car.entity';
 import { CityEntity } from '../../../database/entities/city.entity';
+import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
 import { ModelCarEntity } from '../../../database/entities/model-car.entity';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { BrandRepository } from '../../repository/services/brand.repository';
-import { CarRepository } from '../../repository/services/car.repository';
 import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
+import { CarRepository } from '../../repository/services/car.repository';
 import { CityRepository } from '../../repository/services/city.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
 import { CarListQueryDto } from '../dto/req/car-list.query.dto';
@@ -31,16 +36,28 @@ export class CarsService {
     dto: CreateCarReqDto,
     params: IParams,
   ): Promise<CarEntity> {
-    return await this.carRepository.save(
-      this.carRepository.create({
-        ...dto,
-        user_id: userData.userId,
-        city_id: params.cityId,
-        brand_id: params.brandId,
-        model_id: params.modelId,
-        active: true,
-      }),
-    );
+    const city = await this.cityRepository.findOneBy({ id: params.cityId });
+    const brand = await this.brandRepository.findOneBy({ id: params.brandId });
+    const model = await this.modelRepository.findOneBy({ id: params.modelId });
+    if (!city || !brand || !model) {
+      throw new BadRequestException('Incorrect data!');
+    }
+    if (
+      userData.cars.length > 1 ||
+      userData.account === AccountTypeEnum.PREMIUM
+    ) {
+      return await this.carRepository.save(
+        this.carRepository.create({
+          ...dto,
+          user_id: userData.userId,
+          city_id: params.cityId,
+          brand_id: params.brandId,
+          model_id: params.modelId,
+          active: true,
+        }),
+      );
+    }
+    throw new ForbiddenException('Buy premium!');
   }
 
   public async getListCarsUser(

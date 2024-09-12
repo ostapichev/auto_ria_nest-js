@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { CurrencyEnum } from '../../enums/currency.enum';
+
 export class BaseCarResDto {
   @ApiProperty({
     example: '796cea24-a328-4463-a5e1-85a779e4780f',
@@ -45,6 +47,12 @@ export class BaseCarResDto {
     description: 'Car price',
   })
   price: number;
+
+  @ApiProperty({
+    example: 'USD',
+    description: 'Currency',
+  })
+  currency: CurrencyEnum;
 
   @ApiProperty({
     example: 2020,

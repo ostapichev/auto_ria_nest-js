@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
+import { CurrencyEnum } from '../../modules/cars/enums/currency.enum';
 import { BrandCarEntity } from './brand-car.entity';
 import { CarViewsEntity } from './car-views.entity';
 import { CityEntity } from './city.entity';
@@ -25,17 +26,20 @@ export class CarEntity extends CreateUpdateModel {
   @Column('int')
   price: number;
 
+  @Column('text', { default: CurrencyEnum.UAH })
+  currency: CurrencyEnum;
+
   @Column('int')
   year: number;
 
   @Column('boolean', { default: true })
-  active?: boolean;
+  active: boolean;
 
   @Column('string', { nullable: true })
   brand_id: string;
   @ManyToOne(() => BrandCarEntity, (entity) => entity.cars)
   @JoinColumn({ name: 'brand_id' })
-  brand?: CityEntity;
+  brand?: BrandCarEntity;
 
   @Column('string', { nullable: true })
   model_id: string;

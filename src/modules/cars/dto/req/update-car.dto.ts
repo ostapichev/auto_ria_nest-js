@@ -7,7 +7,7 @@ export class UpdateCarReqDto extends PickType(BaseCarReqDto, [
   'title',
   'description',
   'price',
+  'currency',
   'color',
   'year',
 ]) {}
-
