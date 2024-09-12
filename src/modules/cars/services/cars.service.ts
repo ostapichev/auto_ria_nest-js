@@ -1,21 +1,22 @@
+import { HttpService } from '@nestjs/axios';
 import {
-  BadRequestException, ForbiddenException,
+  BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 
 import { BrandCarEntity } from '../../../database/entities/brand-car.entity';
-import { CarViewsEntity } from '../../../database/entities/car-views.entity';
 import { CarEntity } from '../../../database/entities/car.entity';
+import { CarViewsEntity } from '../../../database/entities/car-views.entity';
 import { CityEntity } from '../../../database/entities/city.entity';
 import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
 import { ModelCarEntity } from '../../../database/entities/model-car.entity';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { BrandRepository } from '../../repository/services/brand.repository';
-import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
 import { CarRepository } from '../../repository/services/car.repository';
+import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
 import { CityRepository } from '../../repository/services/city.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
 import { CarListQueryDto } from '../dto/req/car-list.query.dto';
@@ -133,7 +134,7 @@ export class CarsService {
   public async getExchangeRate(): Promise<any> {
     const url = 'https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5';
     const response = this.httpService.get(url);
-    return lastValueFrom(response);
+    return await lastValueFrom(response);
   }
 
   private async getCarContViews(
