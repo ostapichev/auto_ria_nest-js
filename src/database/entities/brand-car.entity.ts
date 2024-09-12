@@ -7,12 +7,14 @@ import { CreateUpdateModel } from './models';
 
 @Entity(TableNameEnum.BRANDS)
 export class BrandCarEntity extends CreateUpdateModel {
-  @Column('text')
+  @Column('text', { unique: true })
   name?: string;
 
-  @OneToMany(() => ModelCarEntity, (entity) => entity.brand)
+  @OneToMany(() => ModelCarEntity, (entity) => entity.brand, {
+    onDelete: 'CASCADE',
+  })
   models?: ModelCarEntity[];
 
-  @OneToMany(() => CarEntity, (entity) => entity.brand)
+  @OneToMany(() => CarEntity, (entity) => entity.brand, { onDelete: 'CASCADE' })
   cars?: CarEntity[];
 }

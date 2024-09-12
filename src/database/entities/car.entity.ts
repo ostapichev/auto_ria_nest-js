@@ -55,6 +55,9 @@ export class CarEntity extends CreateUpdateModel {
   @JoinColumn({ name: 'user_id' })
   user?: UserEntity;
 
-  @OneToOne(() => CarViewsEntity, (carViews) => carViews.car)
+  @OneToOne(() => CarViewsEntity, (carViews) => carViews.car, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   views?: CarViewsEntity;
 }

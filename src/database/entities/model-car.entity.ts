@@ -7,7 +7,7 @@ import { CreateUpdateModel } from './models';
 
 @Entity(TableNameEnum.MODELS)
 export class ModelCarEntity extends CreateUpdateModel {
-  @Column('text')
+  @Column('text', { unique: true })
   name?: string;
 
   @Column()
@@ -16,6 +16,6 @@ export class ModelCarEntity extends CreateUpdateModel {
   @JoinColumn({ name: 'brand_id' })
   brand?: BrandCarEntity;
 
-  @OneToMany(() => CarEntity, (entity) => entity.model)
+  @OneToMany(() => CarEntity, (entity) => entity.model, { onDelete: 'CASCADE' })
   cars?: CarEntity[];
 }

@@ -4,6 +4,7 @@ import { CarEntity } from './car.entity';
 import { AccountTypeEnum } from './enums/account-type.enum';
 import { TableNameEnum } from './enums/table-name.enum';
 import { UserRoleEnum } from './enums/user-role.enum';
+import { MessageEntity } from './message.entity';
 import { CreateUpdateModel } from './models';
 import { RefreshTokenEntity } from './refresh-token.entity';
 
@@ -36,9 +37,23 @@ export class UserEntity extends CreateUpdateModel {
   @Column('boolean', { default: true })
   status?: boolean;
 
-  @OneToMany(() => CarEntity, (entity) => entity.user)
+  @OneToMany(() => CarEntity, (entity) => entity.user, {
+    onDelete: 'CASCADE',
+  })
   cars?: CarEntity[];
 
-  @OneToMany(() => RefreshTokenEntity, (entity) => entity.user)
+  @OneToMany(() => MessageEntity, (messages) => messages.from_user, {
+    onDelete: 'CASCADE',
+  })
+  get_messages?: MessageEntity[];
+
+  @OneToMany(() => MessageEntity, (messages) => messages.to_user, {
+    onDelete: 'CASCADE',
+  })
+  send_messages?: MessageEntity[];
+
+  @OneToMany(() => RefreshTokenEntity, (entity) => entity.user, {
+    onDelete: 'CASCADE',
+  })
   refreshTokens?: RefreshTokenEntity[];
 }

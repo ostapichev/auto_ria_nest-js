@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,8 +8,10 @@ import {
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
+import { BaseMessageResDto } from '../../chat/dto/res/base-message.res.dto';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CityRepository } from '../../repository/services/city.repository';
+import { MessageRepository } from '../../repository/services/message.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
 import { UserRepository } from '../../repository/services/user.repository';
 import { BaseBrandReqDto } from '../dto/req/base-brand.req.dto';
@@ -25,6 +28,7 @@ export class AdminPanelService {
     private readonly cityRepository: CityRepository,
     private readonly brandRepository: BrandRepository,
     private readonly modelRepository: ModelRepository,
+    private readonly messageRepository: MessageRepository,
   ) {}
 
   public async findAllUsers(): Promise<UserEntity[]> {
@@ -39,6 +43,34 @@ export class AdminPanelService {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
     return user;
+  }
+
+  public async getFromUserMessages(
+    userId: string,
+  ): Promise<BaseMessageResDto[]> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+    if (user.role === UserRoleEnum.SUPERUSER) {
+      throw new ForbiddenException('No permission to perform this user!');
+    }
+    return await this.messageRepository.find({
+      where: { from_user_id: userId },
+    });
+  }
+
+  public async getUserMessages(userId: string): Promise<BaseMessageResDto[]> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+    if (user.role === UserRoleEnum.SUPERUSER) {
+      throw new ForbiddenException('No permission to perform this user!');
+    }
+    return await this.messageRepository.find({
+      where: { to_user_id: userId },
+    });
   }
 
   public async toAdmin(userId: string): Promise<void> {

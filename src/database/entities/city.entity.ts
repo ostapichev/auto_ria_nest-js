@@ -6,9 +6,11 @@ import { CreateUpdateModel } from './models';
 
 @Entity(TableNameEnum.CITIES)
 export class CityEntity extends CreateUpdateModel {
-  @Column('text')
+  @Column('text', { unique: true })
   name?: string;
 
-  @OneToMany(() => CarEntity, (entity) => entity.city)
+  @OneToMany(() => CarEntity, (entity) => entity.city, {
+    onDelete: 'CASCADE',
+  })
   cars?: CarEntity[];
 }

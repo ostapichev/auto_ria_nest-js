@@ -16,10 +16,10 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { ModelCarEntity } from '../../database/entities/model-car.entity';
 import { UserEntity } from '../../database/entities/user.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
+import { BaseMessageResDto } from '../chat/dto/res/base-message.res.dto';
 import { BaseBrandReqDto } from './dto/req/base-brand.req.dto';
 import { BaseCityReqDto } from './dto/req/base-city.req.dto';
 import { BaseModelReqDto } from './dto/req/base-model.req.dto';
@@ -51,6 +51,24 @@ export class AdminPanelController {
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<UserEntity> {
     return await this.adminPanelService.findOne(userId);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseGuards(AdminGuard)
+  @Get('chat_from/:userId')
+  public async getFromUserMessages(
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ): Promise<BaseMessageResDto[]> {
+    return await this.adminPanelService.getFromUserMessages(userId);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseGuards(AdminGuard)
+  @Get('chat_to/:userId')
+  public async getUserMessages(
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ): Promise<BaseMessageResDto[]> {
+    return await this.adminPanelService.getUserMessages(userId);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
