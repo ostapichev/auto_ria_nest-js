@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import {
   Body,
   Controller,
@@ -17,6 +18,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { lastValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { BrandCarEntity } from '../../database/entities/brand-car.entity';
 import { CityEntity } from '../../database/entities/city.entity';
@@ -38,7 +41,10 @@ import { CarsService } from './services/cars.service';
 @ApiTags('Cars')
 @Controller('cars')
 export class CarsController {
-  constructor(private readonly carsService: CarsService) {}
+  constructor(
+    private readonly carsService: CarsService,
+    private readonly httpService: HttpService,
+  ) {}
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
@@ -51,6 +57,8 @@ export class CarsController {
     @Param('modelId', ParseUUIDPipe) modelId: string,
   ): Promise<CreateCarReqDto> {
     const params = { cityId, brandId, modelId };
+    const exchangeRate = await this.carsService.getExchangeRate();
+    console.log(exchangeRate.data[0]);
     const result = await this.carsService.create(userData, dto, params);
     return CarMapper.toResponseDTO(result);
   }
