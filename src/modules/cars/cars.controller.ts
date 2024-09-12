@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import {
   Body,
   Controller,
@@ -18,8 +17,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { BrandCarEntity } from '../../database/entities/brand-car.entity';
 import { CityEntity } from '../../database/entities/city.entity';
@@ -41,10 +38,7 @@ import { CarsService } from './services/cars.service';
 @ApiTags('Cars')
 @Controller('cars')
 export class CarsController {
-  constructor(
-    private readonly carsService: CarsService,
-    private readonly httpService: HttpService,
-  ) {}
+  constructor(private readonly carsService: CarsService,) {}
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
