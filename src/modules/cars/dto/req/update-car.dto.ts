@@ -1,5 +1,13 @@
-import { PartialType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
 
-import { CreateCarReqDto } from './create-car.dto';
+import { BaseCarReqDto } from './base-car.req.dto';
 
-export class UpdateCarDto extends PartialType(CreateCarReqDto) {}
+export class UpdateCarReqDto extends PickType(BaseCarReqDto, [
+  'photo',
+  'title',
+  'description',
+  'price',
+  'color',
+  'year',
+]) {}
+

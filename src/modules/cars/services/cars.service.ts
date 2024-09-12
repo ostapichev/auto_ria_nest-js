@@ -13,7 +13,7 @@ import { CityRepository } from '../../repository/services/city.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
 import { CarListQueryDto } from '../dto/req/car-list.query.dto';
 import { CreateCarReqDto } from '../dto/req/create-car.dto';
-import { UpdateCarDto } from '../dto/req/update-car.dto';
+import { UpdateCarReqDto } from '../dto/req/update-car.dto';
 import { IParams } from '../interfaces/params.interface';
 
 @Injectable()
@@ -67,6 +67,12 @@ export class CarsService {
     return countViews.viewsCount;
   }
 
+  // todo fix
+  public async getCountViewsDay(carId: string): Promise<any> {
+    const [, countViews] = await this.getCarContViews(carId);
+    await this.carViesRepository.getCountViewsDay(carId);
+  }
+
   public async getListAllCities(): Promise<CityEntity[]> {
     return await this.cityRepository.find();
   }
@@ -91,20 +97,24 @@ export class CarsService {
     });
   }
 
-  public async updateCar(carId: string, updateCarDto: UpdateCarDto) {}
+  public async updateCar(
+    carId: string,
+    dto: UpdateCarReqDto,
+  ): Promise<CarEntity> {
+    const car = await this.getCar(carId);
+    this.carRepository.merge(car, dto);
+    return await this.carRepository.save(car);
+  }
 
-  remove(id: number) {
-    return `This action removes a #${id} car`;
+  public async removeCar(carId: string): Promise<void> {
+    await this.carRepository.delete({ id: carId });
   }
 
   private async getCarContViews(
     carId: string,
   ): Promise<[CarEntity, CarViewsEntity]> {
-    const car = await this.carRepository.findOneBy({ id: carId });
+    const car = await this.getCar(carId);
     const countView = await this.carViesRepository.findOneBy({ car_id: carId });
-    if (!car) {
-      throw new NotFoundException(`Car with id ${carId} not found`);
-    }
     if (!countView) {
       await this.carViesRepository.save(
         this.carViesRepository.create({
@@ -113,5 +123,13 @@ export class CarsService {
       );
     }
     return [car, countView];
+  }
+
+  private async getCar(carId: string): Promise<CarEntity> {
+    const car = await this.carRepository.findOneBy({ id: carId });
+    if (!car) {
+      throw new NotFoundException(`Car with id ${carId} not found`);
+    }
+    return car;
   }
 }

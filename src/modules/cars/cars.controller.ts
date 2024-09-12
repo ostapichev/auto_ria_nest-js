@@ -3,10 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
-  Patch,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -24,9 +26,11 @@ import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
 import { CarListQueryDto } from './dto/req/car-list.query.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
-import { UpdateCarDto } from './dto/req/update-car.dto';
+import { UpdateCarReqDto } from './dto/req/update-car.dto';
+import { CarResDto } from './dto/res/car.res.dto';
 import { CarListResDto } from './dto/res/car-list.res.dto';
 import { CarListItemResDto } from './dto/res/car-list-item.res.dto';
+import { AuthorGuard } from './guards/author.guard';
 import { PremiumGuard } from './guards/premium.guard';
 import { CarMapper } from './services/car.mapper';
 import { CarsService } from './services/cars.service';
@@ -117,12 +121,44 @@ export class CarsController {
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
+  @UseGuards(AuthorGuard)
+  @Put(':carId')
+  public async update(
+    @Param('carId', ParseUUIDPipe) carId: string,
+    @Body() dto: UpdateCarReqDto,
+  ): Promise<CarResDto> {
+    const result = await this.carsService.updateCar(carId, dto);
+    return CarMapper.toResponseDTO(result);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthorGuard)
+  @Delete(':carId')
+  remove(@Param('carId', ParseUUIDPipe) carId: string): Promise<void> {
+    return this.carsService.removeCar(carId);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
   @UseGuards(PremiumGuard)
   @Get(':carId/views')
   public async getCountViews(
     @Param('carId', ParseUUIDPipe) carId: string,
   ): Promise<number> {
     return await this.carsService.getCountViews(carId);
+  }
+
+  // todo fix
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @UseGuards(PremiumGuard)
+  @Get(':carId/views_day')
+  public async getCountViewsDay(
+    @Param('carId', ParseUUIDPipe) carId: string,
+  ): Promise<number> {
+    return await this.carsService.getCountViewsDay(carId);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -133,13 +169,5 @@ export class CarsController {
     @Param('cityId', ParseUUIDPipe) cityId: string,
   ): Promise<number> {
     return await this.carsService.getAvgPriceCity(cityId);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCarDto: UpdateCarDto) {}
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.carsService.remove(+id);
   }
 }
