@@ -1,11 +1,9 @@
-import { HttpService } from '@nestjs/axios';
 import {
   BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { lastValueFrom } from 'rxjs';
 
 import { BrandCarEntity } from '../../../database/entities/brand-car.entity';
 import { CarEntity } from '../../../database/entities/car.entity';
@@ -32,7 +30,6 @@ export class CarsService {
     private readonly brandRepository: BrandRepository,
     private readonly modelRepository: ModelRepository,
     private readonly cityRepository: CityRepository,
-    private readonly httpService: HttpService,
   ) {}
 
   public async create(
@@ -129,12 +126,6 @@ export class CarsService {
 
   public async removeCar(carId: string): Promise<void> {
     await this.carRepository.delete({ id: carId });
-  }
-
-  public async getExchangeRate(): Promise<any> {
-    const url = 'https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5';
-    const response = this.httpService.get(url);
-    return await lastValueFrom(response);
   }
 
   private async getCarContViews(

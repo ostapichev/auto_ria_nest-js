@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CurrencyEnum } from '../../enums/currency.enum';
+import { CurrencyEnum } from '../../../currency-course/enums/currency.enum';
 
 export class BaseCarResDto {
   @ApiProperty({

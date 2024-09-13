@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
-import { HttpModule } from '@nestjs/axios';
 
 import { GlobalExceptionFilter } from '../common/http/global-exception.filter';
 import configuration from '../config/configuration';
@@ -9,6 +8,7 @@ import { AdminPanelModule } from './admin_panel/admin_panel.module';
 import { AuthModule } from './auth/auth.module';
 import { CarsModule } from './cars/cars.module';
 import { ChatModule } from './chat/chat.module';
+import { CurrencyCourseModule } from './currency-course/currency-course.module';
 import { FileStorageModule } from './file-storage/file-storage.module';
 import { LoggerModule } from './logger/logger.module';
 import { PostgresModule } from './postgres/postgres.module';
@@ -32,6 +32,7 @@ import { UsersModule } from './users/users.module';
     RedisModule,
     FileStorageModule,
     ChatModule,
+    CurrencyCourseModule,
   ],
   providers: [
     {

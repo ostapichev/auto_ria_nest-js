@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
-import { CurrencyEnum } from '../../modules/cars/enums/currency.enum';
+import { CurrencyEnum } from '../../modules/currency-course/enums/currency.enum';
 import { BrandCarEntity } from './brand-car.entity';
 import { CarViewsEntity } from './car-views.entity';
 import { CityEntity } from './city.entity';

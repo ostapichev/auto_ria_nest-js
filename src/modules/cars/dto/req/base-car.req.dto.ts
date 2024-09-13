@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 
 import { TransformHelper } from '../../../../common/helpers/transform.helper';
-import { CurrencyEnum } from '../../enums/currency.enum';
+import { CurrencyEnum } from '../../../currency-course/enums/currency.enum';
 
 export class BaseCarReqDto {
   @ApiProperty({ example: 'http://localhost:3000/images/car_photo.png' })

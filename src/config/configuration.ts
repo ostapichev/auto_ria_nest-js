@@ -44,4 +44,7 @@ export default (): Config => ({
     bucketUrl: process.env.AWS_S3_BUCKET_URL,
     endpoint: process.env.AWS_S3_ENDPOINT,
   },
+  apiPrivate: {
+    url: process.env.API_PRIVAT_BANK_UA,
+  },
 });

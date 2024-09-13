@@ -6,6 +6,7 @@ export type Config = {
   sentry: SentryConfig;
   jwt: JwtConfig;
   aws: AwsConfig;
+  apiPrivate: PrivateBankConfig;
 };
 
 export type SuperUserConfig = {
@@ -54,4 +55,8 @@ export type AwsConfig = {
   bucketName: string;
   bucketUrl: string;
   endpoint: string;
+};
+
+export type PrivateBankConfig = {
+  url: string;
 };
