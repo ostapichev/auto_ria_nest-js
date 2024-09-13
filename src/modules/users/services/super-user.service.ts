@@ -10,14 +10,10 @@ import { UserRepository } from '../../repository/services/user.repository';
 
 @Injectable()
 export class SuperUserService {
-  private superUserConfig: SuperUserConfig;
-
   constructor(
     private readonly userRepository: UserRepository,
     private readonly configService: ConfigService<Config>,
-  ) {
-    this.superUserConfig = this.configService.get<SuperUserConfig>('superuser');
-  }
+  ) {}
 
   public async createSuperUser(): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({

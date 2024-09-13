@@ -9,15 +9,10 @@ import { BaseCurrencyCourseResDto } from '../dto/res/base-currency-course.res.dt
 
 @Injectable()
 export class CurrencyCourseService {
-  private privateBankConfig: PrivateBankConfig;
-
   constructor(
     private readonly httpService: HttpService,
     private configService: ConfigService<Config>,
-  ) {
-    this.privateBankConfig =
-      this.configService.get<PrivateBankConfig>('apiPrivate');
-  }
+  ) {}
 
   public async getExchangeRate(): Promise<
     AxiosResponse<BaseCurrencyCourseResDto[]>
