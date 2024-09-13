@@ -46,7 +46,13 @@ export class BaseCarResDto {
     example: 10000,
     description: 'Car price',
   })
-  price: number;
+  start_price: number;
+
+  @ApiProperty({
+    example: 12000,
+    description: 'Car price',
+  })
+  update_price: number;
 
   @ApiProperty({
     example: 'USD',

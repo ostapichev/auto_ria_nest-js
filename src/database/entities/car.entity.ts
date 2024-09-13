@@ -24,7 +24,10 @@ export class CarEntity extends CreateUpdateModel {
   color: string;
 
   @Column('int')
-  price: number;
+  start_price: number;
+
+  @Column('int', { default: 0 })
+  update_price?: number;
 
   @Column('text', { default: CurrencyEnum.UAH })
   currency: CurrencyEnum;

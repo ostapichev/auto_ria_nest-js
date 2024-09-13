@@ -47,6 +47,7 @@ export class CarsService {
       userData.cars.length > 1 ||
       userData.account === AccountTypeEnum.PREMIUM
     ) {
+      console.log(dto);
       return await this.carRepository.save(
         this.carRepository.create({
           ...dto,

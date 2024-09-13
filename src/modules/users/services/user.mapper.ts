@@ -42,6 +42,7 @@ export class UserMapper {
       email: user.email,
       role: user.role,
       account: user.account,
+      status: user.status,
       cars: user.cars,
     };
   }

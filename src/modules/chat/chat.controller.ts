@@ -22,6 +22,7 @@ import { IUserData } from '../auth/interfaces/user-data.interface';
 import { BaseMessageReqDto } from './dto/req/base-message.req.dto';
 import { BaseMessageResDto } from './dto/res/base-message.res.dto';
 import { AuthorChatGuard } from './guards/author_chat.guard';
+import { BadWordsGuard } from './guards/bad-words.guard';
 import { ChatService } from './services/chat.service';
 
 @ApiTags('Chat')
@@ -31,6 +32,7 @@ export class ChatController {
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
+  @UseGuards(BadWordsGuard)
   @Post(':to_user_id')
   public async sendMessage(
     @CurrentUser() userData: IUserData,

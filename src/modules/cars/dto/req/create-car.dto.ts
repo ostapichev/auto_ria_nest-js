@@ -7,7 +7,7 @@ export class CreateCarReqDto extends PickType(BaseCarReqDto, [
   'title',
   'description',
   'color',
-  'price',
+  'start_price',
   'currency',
   'year',
 ]) {}

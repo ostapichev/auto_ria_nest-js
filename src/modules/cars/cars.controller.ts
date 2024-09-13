@@ -31,6 +31,7 @@ import { CarResDto } from './dto/res/car.res.dto';
 import { CarListResDto } from './dto/res/car-list.res.dto';
 import { CarListItemResDto } from './dto/res/car-list-item.res.dto';
 import { AuthorGuard } from './guards/author.guard';
+import { BadWordsGuard } from './guards/bad-words.guard';
 import { PremiumGuard } from './guards/premium.guard';
 import { CarMapper } from './services/car.mapper';
 import { CarsService } from './services/cars.service';
@@ -42,6 +43,7 @@ export class CarsController {
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
+  @UseGuards(BadWordsGuard)
   @Post(':cityId/:brandId/:modelId')
   public async create(
     @CurrentUser() userData: IUserData,

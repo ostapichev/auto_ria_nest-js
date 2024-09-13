@@ -8,5 +8,6 @@ export interface IUserData {
   email: string;
   role: UserRoleEnum;
   account: AccountTypeEnum;
+  status: boolean;
   cars: CarEntity[];
 }

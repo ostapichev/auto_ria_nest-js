@@ -8,11 +8,13 @@ import {
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
+import { AuthCacheService } from '../../auth/services/auth-cache.service';
 import { BaseMessageResDto } from '../../chat/dto/res/base-message.res.dto';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CityRepository } from '../../repository/services/city.repository';
 import { MessageRepository } from '../../repository/services/message.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
+import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
 import { BaseBrandReqDto } from '../dto/req/base-brand.req.dto';
 import { BaseCityReqDto } from '../dto/req/base-city.req.dto';
@@ -29,6 +31,8 @@ export class AdminPanelService {
     private readonly brandRepository: BrandRepository,
     private readonly modelRepository: ModelRepository,
     private readonly messageRepository: MessageRepository,
+    private readonly authCashService: AuthCacheService,
+    private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
   public async findAllUsers(): Promise<UserEntity[]> {
@@ -119,6 +123,8 @@ export class AdminPanelService {
     await this.userRepository.update(userId, {
       status: false,
     });
+    await this.authCashService.deleteToken(userId, userData.deviceId);
+    await this.refreshTokenRepository.delete({ user_id: userId });
   }
 
   public async unbanUser(userId: string, userData: IUserData): Promise<void> {

@@ -59,7 +59,14 @@ export class BaseCarReqDto {
   @Min(1)
   @Max(100000000)
   @Type(() => Number)
-  price: number;
+  start_price: number;
+
+  @ApiProperty({ example: 20000 })
+  @IsNumber()
+  @Min(1)
+  @Max(100000000)
+  @Type(() => Number)
+  update_price?: number;
 
   @ApiProperty({ example: 'USD' })
   @IsString()

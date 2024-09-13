@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
+import { BadCountRepository } from './services/bad-count.repository';
 import { BrandRepository } from './services/brand.repository';
 import { CarRepository } from './services/car.repository';
 import { CarViewsRepository } from './services/car-viwes.repository';
@@ -18,6 +19,7 @@ const repositories = [
   BrandRepository,
   ModelRepository,
   MessageRepository,
+  BadCountRepository,
 ];
 
 @Global()
