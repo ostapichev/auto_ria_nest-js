@@ -4,13 +4,14 @@ import { APP_FILTER } from '@nestjs/core';
 
 import { GlobalExceptionFilter } from '../common/http/global-exception.filter';
 import configuration from '../config/configuration';
-import { AdminPanelModule } from './admin_panel/admin_panel.module';
+import { AdminPanelModule } from './admin-panel/admin_panel.module';
 import { AuthModule } from './auth/auth.module';
 import { CarsModule } from './cars/cars.module';
 import { ChatModule } from './chat/chat.module';
 import { CurrencyCourseModule } from './currency-course/currency-course.module';
 import { FileStorageModule } from './file-storage/file-storage.module';
 import { LoggerModule } from './logger/logger.module';
+import { MailSenderModule } from './mail-sender/mail-sender.module';
 import { PostgresModule } from './postgres/postgres.module';
 import { RedisModule } from './redis/redis.module';
 import { RepositoryModule } from './repository/repository.module';
@@ -33,6 +34,7 @@ import { UsersModule } from './users/users.module';
     FileStorageModule,
     ChatModule,
     CurrencyCourseModule,
+    MailSenderModule,
   ],
   providers: [
     {

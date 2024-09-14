@@ -10,6 +10,7 @@ import { CarEntity } from '../../../database/entities/car.entity';
 import { CarViewsEntity } from '../../../database/entities/car-views.entity';
 import { CityEntity } from '../../../database/entities/city.entity';
 import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { ModelCarEntity } from '../../../database/entities/model-car.entity';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { BrandRepository } from '../../repository/services/brand.repository';
@@ -17,6 +18,7 @@ import { CarRepository } from '../../repository/services/car.repository';
 import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
 import { CityRepository } from '../../repository/services/city.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
+import { UserRepository } from '../../repository/services/user.repository';
 import { CarListQueryDto } from '../dto/req/car-list.query.dto';
 import { CreateCarReqDto } from '../dto/req/create-car.dto';
 import { UpdateCarReqDto } from '../dto/req/update-car.dto';
@@ -29,6 +31,7 @@ export class CarsService {
     private readonly carViesRepository: CarViewsRepository,
     private readonly brandRepository: BrandRepository,
     private readonly modelRepository: ModelRepository,
+    private readonly userRepository: UserRepository,
     private readonly cityRepository: CityRepository,
   ) {}
 
@@ -44,10 +47,12 @@ export class CarsService {
       throw new BadRequestException('Incorrect data!');
     }
     if (
-      userData.cars.length > 1 ||
+      userData.cars.length < 1 ||
       userData.account === AccountTypeEnum.PREMIUM
     ) {
-      console.log(dto);
+      await this.userRepository.update(userData.userId, {
+        role: UserRoleEnum.SELLER,
+      });
       return await this.carRepository.save(
         this.carRepository.create({
           ...dto,

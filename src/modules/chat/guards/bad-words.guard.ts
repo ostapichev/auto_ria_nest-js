@@ -6,7 +6,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
+import { UserEntity } from '../../../database/entities/user.entity';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
+import { MailSenderService } from '../../mail-sender/services/mail-sender.service';
 import { BadCountRepository } from '../../repository/services/bad-count.repository';
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
@@ -19,11 +22,12 @@ export class BadWordsGuard implements CanActivate {
     private readonly userRepository: UserRepository,
     private readonly authCashService: AuthCacheService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
+    private readonly mailSenderService: MailSenderService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const { userId, deviceId } = request.user;
+    const { userId, email, deviceId } = request.user;
     const badWords = ['fuck', 'sheet'];
     const hasBadWord = badWords.some((badWord: string) =>
       request.body.content.toLowerCase().includes(badWord),
@@ -39,12 +43,27 @@ export class BadWordsGuard implements CanActivate {
           1,
         );
         if (badCount.count > 0) {
+          let admin: UserEntity;
           await this.userRepository.update(userId, {
             status: false,
           });
+          admin = await this.userRepository.findOneBy({
+            role: UserRoleEnum.ADMIN,
+            status: true,
+          });
+          if (!admin) {
+            admin = await this.userRepository.findOneBy({
+              role: UserRoleEnum.SUPERUSER,
+            });
+          }
           await this.badCountRepository.delete({ user_id: userId });
           await this.authCashService.deleteToken(userId, deviceId);
           await this.refreshTokenRepository.delete({ user_id: userId });
+          await this.mailSenderService.sendMail(
+            admin.email,
+            'The email from chat on auto ria.',
+            `The user id: ${userId} email: ${email} tried to write bad words 3 times! He is banned!`,
+          );
         }
         throw new BadRequestException('The text has some bad words!');
       } else {

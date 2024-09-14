@@ -74,7 +74,7 @@ export class AdminPanelController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(SuperUserGuard, IdMeGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Patch('to_admin/:userId')
+  @Patch('to-admin/:userId')
   public async toAdmin(
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<void> {
@@ -84,7 +84,7 @@ export class AdminPanelController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(SuperUserGuard, IdMeGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Patch('to_user/:userId')
+  @Patch('to-user/:userId')
   public async toUser(
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<void> {

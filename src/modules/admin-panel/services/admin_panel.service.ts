@@ -114,7 +114,7 @@ export class AdminPanelService {
     }
     if (user.role === UserRoleEnum.ADMIN || UserRoleEnum.SUPERUSER) {
       if (userData.role === UserRoleEnum.ADMIN) {
-        throw new BadRequestException('You do not have permissions!');
+        throw new ForbiddenException('You do not have permissions!');
       }
     }
     if (!user.status) {
