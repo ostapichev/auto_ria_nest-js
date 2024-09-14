@@ -59,11 +59,11 @@ export class BadWordsGuard implements CanActivate {
           await this.badCountRepository.delete({ user_id: userId });
           await this.authCashService.deleteToken(userId, deviceId);
           await this.refreshTokenRepository.delete({ user_id: userId });
-          await this.mailSenderService.sendMail(
-            admin.email,
-            'The email from chat on auto ria.',
-            `The user id: ${userId} email: ${email} tried to write bad words 3 times! He is banned!`,
-          );
+          await this.mailSenderService.sendMail({
+            to: admin.email,
+            subject: 'The email from chat on auto ria.',
+            text: `The user id: ${userId} email: ${email} tried to write bad words 3 times! He is banned!`,
+          });
         }
         throw new BadRequestException('The text has some bad words!');
       } else {

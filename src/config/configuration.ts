@@ -30,6 +30,11 @@ export default (): Config => ({
     env: process.env.SENTRY_ENV,
     debug: process.env.SENTRY_DEBUG === 'true',
   },
+  email: {
+    service: process.env.SMTP_SERVICE,
+    email: process.env.SMTP_EMAIL,
+    password: process.env.SMTP_PASSWORD,
+  },
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET,
     accessExpiresIn: Number(process.env.JWT_ACCESS_EXPIRES_IN),

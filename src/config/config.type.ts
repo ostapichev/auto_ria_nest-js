@@ -4,6 +4,7 @@ export type Config = {
   postgres: PostgresConfig;
   redis: RedisConfig;
   sentry: SentryConfig;
+  email: EmailConfig;
   jwt: JwtConfig;
   aws: AwsConfig;
   apiPrivate: PrivateBankConfig;
@@ -39,6 +40,12 @@ export type SentryConfig = {
   dsn: string;
   env: string;
   debug: boolean;
+};
+
+export type EmailConfig = {
+  service: string;
+  email: string;
+  password: string;
 };
 
 export type JwtConfig = {
