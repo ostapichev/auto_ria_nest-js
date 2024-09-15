@@ -12,8 +12,8 @@ import { CityEntity } from '../../../database/entities/city.entity';
 import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { ModelCarEntity } from '../../../database/entities/model-car.entity';
+import { CityCurrencyQueryDto } from '../../admin-panel/dto/req/city-id-req.dto';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
-import { BaseCurrencyCourseReqDto } from '../../currency-course/dto/req/base-currency-course.req.dto';
 import { BaseCurrencyCourseResDto } from '../../currency-course/dto/res/base-currency-course.res.dto';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CarRepository } from '../../repository/services/car.repository';
@@ -113,42 +113,35 @@ export class CarsService {
   }
 
   public async getAvgPrice(
-    currencyType: BaseCurrencyCourseReqDto,
+    query: CityCurrencyQueryDto,
     currencyData: BaseCurrencyCourseResDto[],
   ): Promise<number> {
-    let totalPrice = 0;
-    const cars = await this.carRepository.find();
-    cars.forEach((car) => {
+    const { currency, cityId } = query;
+    const cars = await this.carRepository.find({
+      where: { city_id: cityId, active: true },
+    });
+    const totalPrice = cars.reduce((sum, car) => {
+      let price = car.update_price;
       const exchangeRateFrom = this.findExchangeRate(
         currencyData,
         car.currency,
       );
-      const exchangeRateTo = this.findExchangeRate(
-        currencyData,
-        currencyType.currency,
-      );
-      if (!exchangeRateFrom && !exchangeRateTo) {
-        totalPrice += car.update_price;
-      } else if (exchangeRateFrom && !exchangeRateTo) {
-        totalPrice += car.update_price * exchangeRateFrom;
-      } else if (!exchangeRateFrom && exchangeRateTo) {
-        totalPrice += car.update_price / exchangeRateTo;
-      } else {
+      const exchangeRateTo = this.findExchangeRate(currencyData, currency);
+      if (exchangeRateFrom && exchangeRateTo) {
         const rate = this.getCurrencyExchangeRate(
           currencyData,
           car.currency,
-          currencyType.currency,
+          currency,
         );
-        const curRate = (car.update_price *= rate);
-        totalPrice += curRate;
+        price *= rate;
+      } else if (exchangeRateFrom && !exchangeRateTo) {
+        price *= exchangeRateFrom;
+      } else if (!exchangeRateFrom && exchangeRateTo) {
+        price /= exchangeRateTo;
       }
-    });
-    const result = totalPrice / cars.length;
-    return +result.toFixed(2);
-  }
-
-  public async getAvgPriceCity(cityId: string): Promise<number> {
-    return await this.carRepository.getAVGPriceCity(cityId);
+      return sum + price;
+    }, 0);
+    return +(totalPrice / cars.length).toFixed(2);
   }
 
   public async getListAllModels(brandId: string): Promise<ModelCarEntity[]> {

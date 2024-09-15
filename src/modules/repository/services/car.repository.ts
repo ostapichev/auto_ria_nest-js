@@ -3,7 +3,6 @@ import { DataSource, Repository } from 'typeorm';
 
 import { CarEntity } from '../../../database/entities/car.entity';
 import { CarListQueryDto } from '../../cars/dto/req/car-list.query.dto';
-import { BaseCurrencyCourseResDto } from '../../currency-course/dto/res/base-currency-course.res.dto';
 
 @Injectable()
 export class CarRepository extends Repository<CarEntity> {
@@ -33,36 +32,11 @@ export class CarRepository extends Repository<CarEntity> {
   ): Promise<[CarEntity[], number]> {
     const qb = this.createQueryBuilder('car');
     if (query.search) {
-      qb.andWhere('CONCAT(car.brand, car.model) ILIKE :search');
+      qb.andWhere('CONCAT(car.title, car.description) ILIKE :search');
       qb.setParameter('search', `%${query.search}%`);
     }
     qb.take(query.limit);
     qb.skip((query.page - 1) * query.limit);
     return await qb.getManyAndCount();
-  }
-
-  public async getAVGPrice(
-    currencyCount: BaseCurrencyCourseResDto,
-  ): Promise<number> {
-    const qb = this.createQueryBuilder('car');
-    qb.select('ROUND(AVG(car.update_price), 2)', 'avgPrice');
-    const result = await qb.getRawOne();
-    return result.avgPrice;
-  }
-
-  public async getAVGPriceCity(cityId: string): Promise<number> {
-    const qb = this.createQueryBuilder('car');
-    qb.select('ROUND(AVG(car.update_price), 2)', 'avgPrice');
-    qb.where('car.city_id = :cityId', { cityId });
-    const result = await qb.getRawOne();
-    return result.avgPrice;
-  }
-
-  public async getById(userId: string, carId: string): Promise<CarEntity> {
-    const qb = this.createQueryBuilder('car');
-    qb.leftJoinAndSelect('car.user', 'user');
-    qb.setParameter('userId', userId);
-    qb.andWhere('car.id = :carId', { carId });
-    return await qb.getOneOrFail();
   }
 }

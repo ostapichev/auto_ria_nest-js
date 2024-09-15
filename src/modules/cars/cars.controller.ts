@@ -21,10 +21,10 @@ import {
 import { BrandCarEntity } from '../../database/entities/brand-car.entity';
 import { CityEntity } from '../../database/entities/city.entity';
 import { ModelCarEntity } from '../../database/entities/model-car.entity';
+import { CityCurrencyQueryDto } from '../admin-panel/dto/req/city-id-req.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
-import { BaseCurrencyCourseReqDto } from '../currency-course/dto/req/base-currency-course.req.dto';
 import { CurrencyCourseService } from '../currency-course/services/currency-course.service';
 import { CarListQueryDto } from './dto/req/car-list.query.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
@@ -102,12 +102,12 @@ export class CarsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(PremiumGuard)
-  @Get('avg-price')
-  public async getAvgPrice(
-    @Query() currency: BaseCurrencyCourseReqDto,
+  @Get('avg_price')
+  public async getAvgPriceCity(
+    @Query() query: CityCurrencyQueryDto,
   ): Promise<number> {
     const { data } = await this.currencyCourseService.getExchangeRate();
-    return await this.carsService.getAvgPrice(currency, data);
+    return await this.carsService.getAvgPrice(query, data);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -169,15 +169,5 @@ export class CarsController {
     @Param('carId', ParseUUIDPipe) carId: string,
   ): Promise<number> {
     return await this.carsService.getCountViewsDay(carId);
-  }
-
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiBearerAuth()
-  @UseGuards(PremiumGuard)
-  @Get(':cityId/avg_price_city')
-  public async getAvgPriceCity(
-    @Param('cityId', ParseUUIDPipe) cityId: string,
-  ): Promise<number> {
-    return await this.carsService.getAvgPriceCity(cityId);
   }
 }
