@@ -13,8 +13,8 @@ import { AccountTypeEnum } from '../../../database/entities/enums/account-type.e
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { ModelCarEntity } from '../../../database/entities/model-car.entity';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
+import { BaseCurrencyCourseReqDto } from '../../currency-course/dto/req/base-currency-course.req.dto';
 import { BaseCurrencyCourseResDto } from '../../currency-course/dto/res/base-currency-course.res.dto';
-import { CurrencyEnum } from '../../currency-course/enums/currency.enum';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CarRepository } from '../../repository/services/car.repository';
 import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
@@ -113,17 +113,20 @@ export class CarsService {
   }
 
   public async getAvgPrice(
+    currencyType: BaseCurrencyCourseReqDto,
     currencyData: BaseCurrencyCourseResDto[],
-    currencyType: CurrencyEnum,
   ): Promise<number> {
-    const cars = await this.carRepository.find();
     let totalPrice = 0;
+    const cars = await this.carRepository.find();
     cars.forEach((car) => {
       const exchangeRateFrom = this.findExchangeRate(
         currencyData,
         car.currency,
       );
-      const exchangeRateTo = this.findExchangeRate(currencyData, currencyType);
+      const exchangeRateTo = this.findExchangeRate(
+        currencyData,
+        currencyType.currency,
+      );
       if (!exchangeRateFrom && !exchangeRateTo) {
         totalPrice += car.update_price;
       } else if (exchangeRateFrom && !exchangeRateTo) {
@@ -134,34 +137,12 @@ export class CarsService {
         const rate = this.getCurrencyExchangeRate(
           currencyData,
           car.currency,
-          currencyType,
+          currencyType.currency,
         );
         const curRate = (car.update_price *= rate);
         totalPrice += curRate;
       }
     });
-    /*for (const car of cars) {
-      const exchangeRateFrom = this.findExchangeRate(
-        currencyData,
-        car.currency,
-      );
-      const exchangeRateTo = this.findExchangeRate(currencyData, currencyType);
-      if (!exchangeRateFrom && !exchangeRateTo) {
-        totalPrice += car.update_price;
-      } else if (exchangeRateFrom && !exchangeRateTo) {
-        totalPrice += car.update_price * exchangeRateFrom;
-      } else if (!exchangeRateFrom && exchangeRateTo) {
-        totalPrice += car.update_price / exchangeRateTo;
-      } else {
-        const rate = this.getCurrencyExchangeRate(
-          currencyData,
-          car.currency,
-          currencyType,
-        );
-        const curRate = (car.update_price *= rate);
-        totalPrice += curRate;
-      }
-    }*/
     const result = totalPrice / cars.length;
     return +result.toFixed(2);
   }

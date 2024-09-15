@@ -24,7 +24,7 @@ import { ModelCarEntity } from '../../database/entities/model-car.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
-import { CurrencyEnum } from '../currency-course/enums/currency.enum';
+import { BaseCurrencyCourseReqDto } from '../currency-course/dto/req/base-currency-course.req.dto';
 import { CurrencyCourseService } from '../currency-course/services/currency-course.service';
 import { CarListQueryDto } from './dto/req/car-list.query.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
@@ -104,10 +104,10 @@ export class CarsController {
   @UseGuards(PremiumGuard)
   @Get('avg-price')
   public async getAvgPrice(
-    @Query('currency') currency: CurrencyEnum,
+    @Query() currency: BaseCurrencyCourseReqDto,
   ): Promise<number> {
     const { data } = await this.currencyCourseService.getExchangeRate();
-    return await this.carsService.getAvgPrice(data, currency);
+    return await this.carsService.getAvgPrice(currency, data);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
