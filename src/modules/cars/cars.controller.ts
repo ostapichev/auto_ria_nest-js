@@ -24,6 +24,8 @@ import { ModelCarEntity } from '../../database/entities/model-car.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
+import { CurrencyEnum } from '../currency-course/enums/currency.enum';
+import { CurrencyCourseService } from '../currency-course/services/currency-course.service';
 import { CarListQueryDto } from './dto/req/car-list.query.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
 import { UpdateCarReqDto } from './dto/req/update-car.dto';
@@ -39,7 +41,19 @@ import { CarsService } from './services/cars.service';
 @ApiTags('Cars')
 @Controller('cars')
 export class CarsController {
-  constructor(private readonly carsService: CarsService) {}
+  constructor(
+    private readonly carsService: CarsService,
+    private readonly currencyCourseService: CurrencyCourseService,
+  ) {}
+
+  @SkipAuth()
+  @Get()
+  public async getListAllCars(
+    @Query() query: CarListQueryDto,
+  ): Promise<CarListResDto> {
+    const [entities, total] = await this.carsService.getListAllCars(query);
+    return CarMapper.toResponseListDTO(entities, total, query);
+  }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
@@ -59,7 +73,7 @@ export class CarsController {
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
-  @Get('user_car')
+  @Get('user-car')
   public async getListCarsUser(
     @CurrentUser() userData: IUserData,
     @Query() query: CarListQueryDto,
@@ -68,15 +82,6 @@ export class CarsController {
       userData,
       query,
     );
-    return CarMapper.toResponseListDTO(entities, total, query);
-  }
-
-  @SkipAuth()
-  @Get()
-  public async getListAllCars(
-    @Query() query: CarListQueryDto,
-  ): Promise<CarListResDto> {
-    const [entities, total] = await this.carsService.getListAllCars(query);
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
@@ -97,9 +102,12 @@ export class CarsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(PremiumGuard)
-  @Get('avg_price')
-  public async getAvgPrice(): Promise<number> {
-    return await this.carsService.getAvgPrice();
+  @Get('avg-price')
+  public async getAvgPrice(
+    @Query('currency') currency: CurrencyEnum,
+  ): Promise<number> {
+    const { data } = await this.currencyCourseService.getExchangeRate();
+    return await this.carsService.getAvgPrice(data, currency);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })

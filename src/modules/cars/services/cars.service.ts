@@ -13,6 +13,8 @@ import { AccountTypeEnum } from '../../../database/entities/enums/account-type.e
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { ModelCarEntity } from '../../../database/entities/model-car.entity';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
+import { BaseCurrencyCourseResDto } from '../../currency-course/dto/res/base-currency-course.res.dto';
+import { CurrencyEnum } from '../../currency-course/enums/currency.enum';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CarRepository } from '../../repository/services/car.repository';
 import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
@@ -50,12 +52,15 @@ export class CarsService {
       userData.cars.length < 1 ||
       userData.account === AccountTypeEnum.PREMIUM
     ) {
-      await this.userRepository.update(userData.userId, {
-        role: UserRoleEnum.SELLER,
-      });
+      if (userData.role === UserRoleEnum.BUYER) {
+        await this.userRepository.update(userData.userId, {
+          role: UserRoleEnum.SELLER,
+        });
+      }
       return await this.carRepository.save(
         this.carRepository.create({
           ...dto,
+          update_price: dto.start_price,
           user_id: userData.userId,
           city_id: params.cityId,
           brand_id: params.brandId,
@@ -107,8 +112,58 @@ export class CarsService {
     });
   }
 
-  public async getAvgPrice(): Promise<number> {
-    return await this.carRepository.getAVGPrice();
+  public async getAvgPrice(
+    currencyData: BaseCurrencyCourseResDto[],
+    currencyType: CurrencyEnum,
+  ): Promise<number> {
+    const cars = await this.carRepository.find();
+    let totalPrice = 0;
+    cars.forEach((car) => {
+      const exchangeRateFrom = this.findExchangeRate(
+        currencyData,
+        car.currency,
+      );
+      const exchangeRateTo = this.findExchangeRate(currencyData, currencyType);
+      if (!exchangeRateFrom && !exchangeRateTo) {
+        totalPrice += car.update_price;
+      } else if (exchangeRateFrom && !exchangeRateTo) {
+        totalPrice += car.update_price * exchangeRateFrom;
+      } else if (!exchangeRateFrom && exchangeRateTo) {
+        totalPrice += car.update_price / exchangeRateTo;
+      } else {
+        const rate = this.getCurrencyExchangeRate(
+          currencyData,
+          car.currency,
+          currencyType,
+        );
+        const curRate = (car.update_price *= rate);
+        totalPrice += curRate;
+      }
+    });
+    /*for (const car of cars) {
+      const exchangeRateFrom = this.findExchangeRate(
+        currencyData,
+        car.currency,
+      );
+      const exchangeRateTo = this.findExchangeRate(currencyData, currencyType);
+      if (!exchangeRateFrom && !exchangeRateTo) {
+        totalPrice += car.update_price;
+      } else if (exchangeRateFrom && !exchangeRateTo) {
+        totalPrice += car.update_price * exchangeRateFrom;
+      } else if (!exchangeRateFrom && exchangeRateTo) {
+        totalPrice += car.update_price / exchangeRateTo;
+      } else {
+        const rate = this.getCurrencyExchangeRate(
+          currencyData,
+          car.currency,
+          currencyType,
+        );
+        const curRate = (car.update_price *= rate);
+        totalPrice += curRate;
+      }
+    }*/
+    const result = totalPrice / cars.length;
+    return +result.toFixed(2);
   }
 
   public async getAvgPriceCity(cityId: string): Promise<number> {
@@ -155,5 +210,29 @@ export class CarsService {
       throw new NotFoundException(`Car with id ${carId} not found`);
     }
     return car;
+  }
+
+  private findExchangeRate(
+    rates: BaseCurrencyCourseResDto[],
+    currency: string,
+  ): number | null {
+    const rate = rates.find((rate) => rate.ccy === currency);
+    if (rate) {
+      return parseFloat(rate.sale);
+    }
+    return null;
+  }
+
+  private getCurrencyExchangeRate(
+    rates: BaseCurrencyCourseResDto[],
+    fromCurrency: string,
+    toCurrency: string,
+  ): number | null {
+    const fromRate = rates.find((rate) => rate.ccy === fromCurrency);
+    const toRate = rates.find((rate) => rate.ccy === toCurrency);
+    if (fromRate && toRate) {
+      return parseFloat(fromRate.sale) / parseFloat(toRate.sale);
+    }
+    return null;
   }
 }

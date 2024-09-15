@@ -8,5 +8,6 @@ import { CurrencyCourseService } from './services/currency-course.service';
   imports: [HttpModule],
   controllers: [CurrencyCourseController],
   providers: [CurrencyCourseService],
+  exports: [CurrencyCourseService],
 })
 export class CurrencyCourseModule {}

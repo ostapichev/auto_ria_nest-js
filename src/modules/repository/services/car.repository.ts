@@ -3,6 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 
 import { CarEntity } from '../../../database/entities/car.entity';
 import { CarListQueryDto } from '../../cars/dto/req/car-list.query.dto';
+import { BaseCurrencyCourseResDto } from '../../currency-course/dto/res/base-currency-course.res.dto';
 
 @Injectable()
 export class CarRepository extends Repository<CarEntity> {
@@ -40,16 +41,18 @@ export class CarRepository extends Repository<CarEntity> {
     return await qb.getManyAndCount();
   }
 
-  public async getAVGPrice(): Promise<number> {
+  public async getAVGPrice(
+    currencyCount: BaseCurrencyCourseResDto,
+  ): Promise<number> {
     const qb = this.createQueryBuilder('car');
-    qb.select('ROUND(AVG(car.price), 2)', 'avgPrice');
+    qb.select('ROUND(AVG(car.update_price), 2)', 'avgPrice');
     const result = await qb.getRawOne();
     return result.avgPrice;
   }
 
   public async getAVGPriceCity(cityId: string): Promise<number> {
     const qb = this.createQueryBuilder('car');
-    qb.select('ROUND(AVG(car.price), 2)', 'avgPrice');
+    qb.select('ROUND(AVG(car.update_price), 2)', 'avgPrice');
     qb.where('car.city_id = :cityId', { cityId });
     const result = await qb.getRawOne();
     return result.avgPrice;
