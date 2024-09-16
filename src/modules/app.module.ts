@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { GlobalExceptionFilter } from '../common/http/global-exception.filter';
 import configuration from '../config/configuration';
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module';
       load: [configuration],
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     AdminPanelModule,
     AuthModule,
     CarsModule,

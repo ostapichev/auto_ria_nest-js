@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { CurrencyRateEntity } from '../../database/entities/currency-rate.entity';
 
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
-import { BaseCurrencyRateResDto } from './dto/res/base-currency-rate-res.dto';
 import { CurrencyRateService } from './services/currency-rate.service';
 
 @ApiTags('Currency Course')
@@ -12,8 +12,7 @@ export class CurrencyRateController {
 
   @SkipAuth()
   @Get()
-  public async getCurrencyRate(): Promise<BaseCurrencyRateResDto[]> {
-    const exchangeRate = await this.currencyCourseService.getExchangeRate();
-    return exchangeRate.data;
+  public async getCurrencyRate(): Promise<CurrencyRateEntity[]> {
+    return await this.currencyCourseService.getExchangeRate();
   }
 }

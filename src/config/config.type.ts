@@ -8,6 +8,7 @@ export type Config = {
   jwt: JwtConfig;
   aws: AwsConfig;
   apiPrivate: PrivateBankConfig;
+  timeZone: TimeZoneConfig;
 };
 
 export type SuperUserConfig = {
@@ -67,3 +68,7 @@ export type AwsConfig = {
 export type PrivateBankConfig = {
   url: string;
 };
+
+export type TimeZoneConfig = {
+  timeZone: string;
+}

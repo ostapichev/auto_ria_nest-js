@@ -105,8 +105,8 @@ export class CarsController {
   @Get('avg_price')
   public async getAvgPriceCity(
     @Query() query: CityCurrencyQueryDto,
-  ): Promise<any> {
-    const currencies = await this.currencyCourseService.getCurrencyRate();
+  ): Promise<number> {
+    const currencies = await this.currencyCourseService.getExchangeRate();
     return await this.carsService.getAvgPrice(query, currencies);
   }
 

@@ -52,4 +52,7 @@ export default (): Config => ({
   apiPrivate: {
     url: process.env.API_PRIVAT_BANK_UA,
   },
+  timeZone: {
+    timeZone: process.env.LOCAL_TIME_ZONE,
+  }
 });

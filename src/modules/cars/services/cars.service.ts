@@ -15,7 +15,6 @@ import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { ModelCarEntity } from '../../../database/entities/model-car.entity';
 import { CityCurrencyQueryDto } from '../../admin-panel/dto/req/city-id-req.dto';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
-import { BaseCurrencyRateResDto } from '../../currency-rate/dto/res/base-currency-rate-res.dto';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CarRepository } from '../../repository/services/car.repository';
 import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
@@ -142,7 +141,7 @@ export class CarsService {
       }
       return sum + price;
     }, 0);
-    return totalPrice / cars.length;
+    return +(totalPrice / cars.length).toFixed(2);
   }
 
   public async getListAllModels(brandId: string): Promise<ModelCarEntity[]> {
