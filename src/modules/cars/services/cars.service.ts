@@ -9,12 +9,13 @@ import { BrandCarEntity } from '../../../database/entities/brand-car.entity';
 import { CarEntity } from '../../../database/entities/car.entity';
 import { CarViewsEntity } from '../../../database/entities/car-views.entity';
 import { CityEntity } from '../../../database/entities/city.entity';
+import { CurrencyRateEntity } from '../../../database/entities/currency-rate.entity';
 import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { ModelCarEntity } from '../../../database/entities/model-car.entity';
 import { CityCurrencyQueryDto } from '../../admin-panel/dto/req/city-id-req.dto';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
-import { BaseCurrencyCourseResDto } from '../../currency-course/dto/res/base-currency-course.res.dto';
+import { BaseCurrencyRateResDto } from '../../currency-rate/dto/res/base-currency-rate-res.dto';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CarRepository } from '../../repository/services/car.repository';
 import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
@@ -114,7 +115,7 @@ export class CarsService {
 
   public async getAvgPrice(
     query: CityCurrencyQueryDto,
-    currencyData: BaseCurrencyCourseResDto[],
+    currencyData: CurrencyRateEntity[],
   ): Promise<number> {
     const { currency, cityId } = query;
     const cars = await this.carRepository.find({
@@ -141,7 +142,7 @@ export class CarsService {
       }
       return sum + price;
     }, 0);
-    return +(totalPrice / cars.length).toFixed(2);
+    return totalPrice / cars.length;
   }
 
   public async getListAllModels(brandId: string): Promise<ModelCarEntity[]> {
@@ -187,25 +188,25 @@ export class CarsService {
   }
 
   private findExchangeRate(
-    rates: BaseCurrencyCourseResDto[],
+    rates: CurrencyRateEntity[],
     currency: string,
   ): number | null {
     const rate = rates.find((rate) => rate.ccy === currency);
     if (rate) {
-      return parseFloat(rate.sale);
+      return rate.sale;
     }
     return null;
   }
 
   private getCurrencyExchangeRate(
-    rates: BaseCurrencyCourseResDto[],
+    rates: CurrencyRateEntity[],
     fromCurrency: string,
     toCurrency: string,
   ): number | null {
     const fromRate = rates.find((rate) => rate.ccy === fromCurrency);
     const toRate = rates.find((rate) => rate.ccy === toCurrency);
     if (fromRate && toRate) {
-      return parseFloat(fromRate.sale) / parseFloat(toRate.sale);
+      return fromRate.sale / toRate.sale;
     }
     return null;
   }

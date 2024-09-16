@@ -3,7 +3,7 @@ import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
 
 import { TransformHelper } from '../../../../common/helpers/transform.helper';
-import { CurrencyEnum } from '../../../currency-course/enums/currency.enum';
+import { CurrencyEnum } from '../../../currency-rate/enums/currency.enum';
 
 export class CityCurrencyQueryDto {
   @ApiProperty({ example: '4258725c-3f5b-4bda-9ad5-3838192e9d87' })

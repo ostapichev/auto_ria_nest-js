@@ -25,7 +25,7 @@ import { CityCurrencyQueryDto } from '../admin-panel/dto/req/city-id-req.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
-import { CurrencyCourseService } from '../currency-course/services/currency-course.service';
+import { CurrencyRateService } from '../currency-rate/services/currency-rate.service';
 import { CarListQueryDto } from './dto/req/car-list.query.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
 import { UpdateCarReqDto } from './dto/req/update-car.dto';
@@ -43,7 +43,7 @@ import { CarsService } from './services/cars.service';
 export class CarsController {
   constructor(
     private readonly carsService: CarsService,
-    private readonly currencyCourseService: CurrencyCourseService,
+    private readonly currencyCourseService: CurrencyRateService,
   ) {}
 
   @SkipAuth()
@@ -105,9 +105,9 @@ export class CarsController {
   @Get('avg_price')
   public async getAvgPriceCity(
     @Query() query: CityCurrencyQueryDto,
-  ): Promise<number> {
-    const { data } = await this.currencyCourseService.getExchangeRate();
-    return await this.carsService.getAvgPrice(query, data);
+  ): Promise<any> {
+    const currencies = await this.currencyCourseService.getCurrencyRate();
+    return await this.carsService.getAvgPrice(query, currencies);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })

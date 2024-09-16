@@ -8,7 +8,7 @@ import { AdminPanelModule } from './admin-panel/admin_panel.module';
 import { AuthModule } from './auth/auth.module';
 import { CarsModule } from './cars/cars.module';
 import { ChatModule } from './chat/chat.module';
-import { CurrencyCourseModule } from './currency-course/currency-course.module';
+import { CurrencyRateModule } from './currency-rate/currency-rate.module';
 import { FileStorageModule } from './file-storage/file-storage.module';
 import { LoggerModule } from './logger/logger.module';
 import { MailSenderModule } from './mail-sender/mail-sender.module';
@@ -33,7 +33,7 @@ import { UsersModule } from './users/users.module';
     RedisModule,
     FileStorageModule,
     ChatModule,
-    CurrencyCourseModule,
+    CurrencyRateModule,
     MailSenderModule,
   ],
   providers: [

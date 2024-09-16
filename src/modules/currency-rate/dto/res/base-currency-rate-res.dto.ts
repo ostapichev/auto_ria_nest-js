@@ -2,16 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { CurrencyEnum } from '../../enums/currency.enum';
 
-export class BaseCurrencyCourseResDto {
+export class BaseCurrencyRateResDto {
   @ApiProperty({
     example: CurrencyEnum.EUR,
   })
-  ccy: string;
+  ccy: CurrencyEnum;
 
   @ApiProperty({
     example: CurrencyEnum.UAH,
   })
-  base_ccy: string;
+  base_ccy: CurrencyEnum;
 
   @ApiProperty({
     example: '44.90000',
