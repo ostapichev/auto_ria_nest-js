@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as moment from 'moment-timezone';
 
 import { BrandCarEntity } from '../../../database/entities/brand-car.entity';
 import { CarEntity } from '../../../database/entities/car.entity';
@@ -21,8 +22,8 @@ import { CarViewsRepository } from '../../repository/services/car-viwes.reposito
 import { CityRepository } from '../../repository/services/city.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
 import { UserRepository } from '../../repository/services/user.repository';
-import { CarListQueryDto } from '../dto/req/car-list.query.dto';
 import { CreateCarReqDto } from '../dto/req/create-car.dto';
+import { ListQueryDto } from '../dto/req/list-query.dto';
 import { UpdateCarReqDto } from '../dto/req/update-car.dto';
 import { IParams } from '../interfaces/params.interface';
 
@@ -74,13 +75,13 @@ export class CarsService {
 
   public async getListCarsUser(
     userData: IUserData,
-    query: CarListQueryDto,
+    query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     return await this.carRepository.getList(userData.userId, query);
   }
 
   public async getListAllCars(
-    query: CarListQueryDto,
+    query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     return await this.carRepository.getListAllCars(query);
   }
@@ -97,9 +98,36 @@ export class CarsService {
   }
 
   // todo fix
-  public async getCountViewsDay(carId: string): Promise<any> {
-    const [, countViews] = await this.getCarContViews(carId);
-    await this.carViesRepository.getCountViewsDay(carId);
+  public async getCountViewsDay(carId: string): Promise<number> {
+    try {
+      const today = new Date();
+      const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+      const localDateStart = moment
+        .tz(startOfDay, 'UTC')
+        .tz('Europe/Kyiv')
+        .toDate();
+      const localDateEnd = moment
+        .tz(endOfDay, 'UTC')
+        .tz('Europe/Kyiv')
+        .toDate();
+      const result = await this.carViesRepository
+        .createQueryBuilder('car_views')
+        .where('car_views.carId = :carId', { carId })
+        .andWhere(
+          'car_views.created BETWEEN :localDateStart AND :localDateEnd',
+          {
+            localDateStart,
+            localDateEnd,
+          },
+        )
+        .getCount();
+      console.log(result);
+      return result;
+    } catch (error) {
+      console.error('Error getting count of views for the day:', error);
+      throw new Error('Failed to get count of views for the day');
+    }
   }
 
   public async getListAllCities(): Promise<CityEntity[]> {
@@ -157,6 +185,22 @@ export class CarsService {
     const car = await this.getCar(carId);
     this.carRepository.merge(car, dto);
     return await this.carRepository.save(car);
+  }
+
+  public async deActivateCar(carId: string): Promise<void> {
+    const car = await this.getCar(carId);
+    if (car.active === false) {
+      throw new BadRequestException('The car is already not active!');
+    }
+    await this.carRepository.update(carId, { active: false });
+  }
+
+  public async activateCar(carId: string): Promise<void> {
+    const car = await this.getCar(carId);
+    if (car.active === true) {
+      throw new BadRequestException('The car is already active!');
+    }
+    await this.carRepository.update(carId, { active: true });
   }
 
   public async removeCar(carId: string): Promise<void> {

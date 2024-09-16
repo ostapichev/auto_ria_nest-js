@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
 import { CarEntity } from '../../../database/entities/car.entity';
-import { CarListQueryDto } from '../../cars/dto/req/car-list.query.dto';
+import { ListQueryDto } from '../../cars/dto/req/list-query.dto';
 
 @Injectable()
 export class CarRepository extends Repository<CarEntity> {
@@ -12,7 +12,7 @@ export class CarRepository extends Repository<CarEntity> {
 
   public async getList(
     userId: string,
-    query: CarListQueryDto,
+    query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     const qb = this.createQueryBuilder('car');
     qb.leftJoinAndSelect('car.user', 'user');
@@ -28,7 +28,7 @@ export class CarRepository extends Repository<CarEntity> {
   }
 
   public async getListAllCars(
-    query: CarListQueryDto,
+    query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     const qb = this.createQueryBuilder('car');
     if (query.search) {

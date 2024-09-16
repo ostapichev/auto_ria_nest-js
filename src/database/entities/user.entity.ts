@@ -1,7 +1,6 @@
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
-import { BadCountEntity } from './bad-words-count.entity';
-import { CarViewsEntity } from './car-views.entity';
 
+import { BadCountEntity } from './bad-words-count.entity';
 import { CarEntity } from './car.entity';
 import { AccountTypeEnum } from './enums/account-type.enum';
 import { TableNameEnum } from './enums/table-name.enum';

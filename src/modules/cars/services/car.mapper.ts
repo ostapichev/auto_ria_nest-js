@@ -1,6 +1,6 @@
 import { ConfigStaticService } from '../../../config/config-static';
 import { CarEntity } from '../../../database/entities/car.entity';
-import { CarListQueryDto } from '../dto/req/car-list.query.dto';
+import { ListQueryDto } from '../dto/req/list-query.dto';
 import { CarResDto } from '../dto/res/car.res.dto';
 import { CarListResDto } from '../dto/res/car-list.res.dto';
 import { CarListItemResDto } from '../dto/res/car-list-item.res.dto';
@@ -9,7 +9,7 @@ export class CarMapper {
   public static toResponseListDTO(
     entities: CarEntity[],
     total: number,
-    query: CarListQueryDto,
+    query: ListQueryDto,
   ): CarListResDto {
     return {
       data: entities.map(this.toResponseListItemDTO),

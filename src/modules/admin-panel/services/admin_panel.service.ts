@@ -5,10 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
+import { ListQueryDto } from '../../cars/dto/req/list-query.dto';
 import { BaseMessageResDto } from '../../chat/dto/res/base-message.res.dto';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CityRepository } from '../../repository/services/city.repository';
@@ -35,14 +37,17 @@ export class AdminPanelService {
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
-  public async findAllUsers(): Promise<UserEntity[]> {
-    return await this.userRepository.find({
-      relations: { cars: true },
-    });
+  public async findAllUsers(
+    query: ListQueryDto,
+  ): Promise<[UserEntity[], number]> {
+    return await this.userRepository.getListAllUsers(query);
   }
 
   public async findOne(userId: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: { cars: true },
+    });
     if (!user) {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
@@ -88,6 +93,7 @@ export class AdminPanelService {
     if (user.role === UserRoleEnum.BUYER || user.role === UserRoleEnum.SELLER) {
       await this.userRepository.update(userId, {
         role: UserRoleEnum.ADMIN,
+        account: AccountTypeEnum.PREMIUM,
       });
     }
   }

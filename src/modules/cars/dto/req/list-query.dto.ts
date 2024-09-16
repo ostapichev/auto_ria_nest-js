@@ -3,7 +3,7 @@ import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 import { TransformHelper } from '../../../../common/helpers/transform.helper';
 
-export class CarListQueryDto {
+export class ListQueryDto {
   @Type(() => Number)
   @IsInt()
   @Max(100)

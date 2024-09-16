@@ -1,11 +1,25 @@
 import { ConfigStaticService } from '../../../config/config-static';
 import { UserEntity } from '../../../database/entities/user.entity';
+import { UserListResDto } from '../../admin-panel/dto/res/user-list.res.dto';
 import { IJwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
+import { ListQueryDto } from '../../cars/dto/req/list-query.dto';
 import { UserResDto } from '../dto/res/user.res.dto';
 import { UserResPublicDto } from '../dto/res/user.res-public.dto';
 
 export class UserMapper {
+  public static toResponseListDTO(
+    entities: UserEntity[],
+    total: number,
+    query: ListQueryDto,
+  ): UserListResDto {
+    return {
+      data: entities.map(this.toResponseDTO),
+      total,
+      ...query,
+    };
+  }
+
   public static toResponseDTO(data: UserEntity): UserResDto {
     const awsConfig = ConfigStaticService.get().aws;
     return {

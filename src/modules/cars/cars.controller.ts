@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -26,8 +27,8 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
 import { CurrencyRateService } from '../currency-rate/services/currency-rate.service';
-import { CarListQueryDto } from './dto/req/car-list.query.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
+import { ListQueryDto } from './dto/req/list-query.dto';
 import { UpdateCarReqDto } from './dto/req/update-car.dto';
 import { CarResDto } from './dto/res/car.res.dto';
 import { CarListResDto } from './dto/res/car-list.res.dto';
@@ -49,7 +50,7 @@ export class CarsController {
   @SkipAuth()
   @Get()
   public async getListAllCars(
-    @Query() query: CarListQueryDto,
+    @Query() query: ListQueryDto,
   ): Promise<CarListResDto> {
     const [entities, total] = await this.carsService.getListAllCars(query);
     return CarMapper.toResponseListDTO(entities, total, query);
@@ -76,7 +77,7 @@ export class CarsController {
   @Get('user-car')
   public async getListCarsUser(
     @CurrentUser() userData: IUserData,
-    @Query() query: CarListQueryDto,
+    @Query() query: ListQueryDto,
   ): Promise<CarListResDto> {
     const [entities, total] = await this.carsService.getListCarsUser(
       userData,
@@ -103,7 +104,7 @@ export class CarsController {
   @ApiBearerAuth()
   @UseGuards(PremiumGuard)
   @Get('avg_price')
-  public async getAvgPriceCity(
+  public async getAvgPrice(
     @Query() query: CityCurrencyQueryDto,
   ): Promise<number> {
     const currencies = await this.currencyCourseService.getExchangeRate();
@@ -146,18 +147,40 @@ export class CarsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthorGuard)
   @Delete(':carId')
-  remove(@Param('carId', ParseUUIDPipe) carId: string): Promise<void> {
-    return this.carsService.removeCar(carId);
+  public async remove(
+    @Param('carId', ParseUUIDPipe) carId: string,
+  ): Promise<void> {
+    return await this.carsService.removeCar(carId);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(PremiumGuard)
-  @Get(':carId/views')
+  @Get('views/:carId')
   public async getCountViews(
     @Param('carId', ParseUUIDPipe) carId: string,
   ): Promise<number> {
     return await this.carsService.getCountViews(carId);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthorGuard)
+  @Patch('deActivate/:carId')
+  async deActivate(
+    @Param('carId', ParseUUIDPipe) carId: string,
+  ): Promise<void> {
+    return await this.carsService.deActivateCar(carId);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthorGuard)
+  @Patch('activate/:carId')
+  async activate(@Param('carId', ParseUUIDPipe) carId: string): Promise<void> {
+    return await this.carsService.activateCar(carId);
   }
 
   // todo fix
