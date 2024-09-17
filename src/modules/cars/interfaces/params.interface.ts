@@ -3,3 +3,8 @@ export interface IParams {
   brandId: string;
   modelId: string;
 }
+
+export interface IParamsCount {
+  carId: string;
+  day?: number;
+}

@@ -27,6 +27,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
 import { CurrencyRateService } from '../currency-rate/services/currency-rate.service';
+import { CarViewReqDto } from './dto/req/car-view-req.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
 import { ListQueryDto } from './dto/req/list-query.dto';
 import { UpdateCarReqDto } from './dto/req/update-car.dto';
@@ -156,11 +157,9 @@ export class CarsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(PremiumGuard)
-  @Get('views/:carId')
-  public async getCountViews(
-    @Param('carId', ParseUUIDPipe) carId: string,
-  ): Promise<number> {
-    return await this.carsService.getCountViews(carId);
+  @Get('views/:carId/:day?')
+  public async getCountViews(@Query() query: CarViewReqDto): Promise<number> {
+    return await this.carsService.getCountViews(query);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -181,16 +180,5 @@ export class CarsController {
   @Patch('activate/:carId')
   async activate(@Param('carId', ParseUUIDPipe) carId: string): Promise<void> {
     return await this.carsService.activateCar(carId);
-  }
-
-  // todo fix
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiBearerAuth()
-  @UseGuards(PremiumGuard)
-  @Get(':carId/views_day')
-  public async getCountViewsDay(
-    @Param('carId', ParseUUIDPipe) carId: string,
-  ): Promise<number> {
-    return await this.carsService.getCountViewsDay(carId);
   }
 }

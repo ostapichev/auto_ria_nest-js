@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import * as moment from 'moment-timezone';
+import { Between } from 'typeorm';
 
 import { BrandCarEntity } from '../../../database/entities/brand-car.entity';
 import { CarEntity } from '../../../database/entities/car.entity';
@@ -22,6 +22,7 @@ import { CarViewsRepository } from '../../repository/services/car-viwes.reposito
 import { CityRepository } from '../../repository/services/city.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
 import { UserRepository } from '../../repository/services/user.repository';
+import { CarViewReqDto } from '../dto/req/car-view-req.dto';
 import { CreateCarReqDto } from '../dto/req/create-car.dto';
 import { ListQueryDto } from '../dto/req/list-query.dto';
 import { UpdateCarReqDto } from '../dto/req/update-car.dto';
@@ -43,18 +44,17 @@ export class CarsService {
     dto: CreateCarReqDto,
     params: IParams,
   ): Promise<CarEntity> {
-    const city = await this.cityRepository.findOneBy({ id: params.cityId });
-    const brand = await this.brandRepository.findOneBy({ id: params.brandId });
-    const model = await this.modelRepository.findOneBy({ id: params.modelId });
+    const { cityId, brandId, modelId } = params;
+    const { cars, userId, role, account } = userData;
+    const city = await this.cityRepository.findOneBy({ id: cityId });
+    const brand = await this.brandRepository.findOneBy({ id: brandId });
+    const model = await this.modelRepository.findOneBy({ id: modelId });
     if (!city || !brand || !model) {
       throw new BadRequestException('Incorrect data!');
     }
-    if (
-      userData.cars.length < 1 ||
-      userData.account === AccountTypeEnum.PREMIUM
-    ) {
-      if (userData.role === UserRoleEnum.BUYER) {
-        await this.userRepository.update(userData.userId, {
+    if (cars.length < 1 || account === AccountTypeEnum.PREMIUM) {
+      if (role === UserRoleEnum.BUYER) {
+        await this.userRepository.update(userId, {
           role: UserRoleEnum.SELLER,
         });
       }
@@ -62,10 +62,10 @@ export class CarsService {
         this.carRepository.create({
           ...dto,
           update_price: dto.start_price,
-          user_id: userData.userId,
-          city_id: params.cityId,
-          brand_id: params.brandId,
-          model_id: params.modelId,
+          user_id: userId,
+          city_id: cityId,
+          brand_id: brandId,
+          model_id: modelId,
           active: true,
         }),
       );
@@ -87,47 +87,33 @@ export class CarsService {
   }
 
   public async findOneCar(carId: string): Promise<CarEntity> {
-    const [car] = await this.getCarContViews(carId);
-    await this.carViesRepository.increment({ car_id: carId }, 'viewsCount', 1);
+    const car = await this.getCar(carId);
+    await this.carViesRepository.save(
+      this.carViesRepository.create({
+        viewsCount: 1,
+        car_id: carId,
+      }),
+    );
     return car;
   }
 
-  public async getCountViews(carId: string): Promise<number> {
-    const [, countViews] = await this.getCarContViews(carId);
-    return countViews.viewsCount;
-  }
-
-  // todo fix
-  public async getCountViewsDay(carId: string): Promise<number> {
-    try {
-      const today = new Date();
-      const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-      const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-      const localDateStart = moment
-        .tz(startOfDay, 'UTC')
-        .tz('Europe/Kyiv')
-        .toDate();
-      const localDateEnd = moment
-        .tz(endOfDay, 'UTC')
-        .tz('Europe/Kyiv')
-        .toDate();
-      const result = await this.carViesRepository
-        .createQueryBuilder('car_views')
-        .where('car_views.carId = :carId', { carId })
-        .andWhere(
-          'car_views.created BETWEEN :localDateStart AND :localDateEnd',
-          {
-            localDateStart,
-            localDateEnd,
-          },
-        )
-        .getCount();
-      console.log(result);
-      return result;
-    } catch (error) {
-      console.error('Error getting count of views for the day:', error);
-      throw new Error('Failed to get count of views for the day');
+  public async getCountViews(query: CarViewReqDto): Promise<number> {
+    let views: CarViewsEntity[];
+    const { carId, day } = query;
+    const car = await this.getCar(carId);
+    if (day) {
+      const startDate = new Date();
+      const endDate = new Date();
+      startDate.setDate(startDate.getDate() - day);
+      views = await this.carViesRepository.find({
+        where: { car_id: car.id, created: Between(startDate, endDate) },
+      });
+    } else {
+      views = await this.carViesRepository.find({
+        where: { car_id: car.id },
+      });
     }
+    return views.reduce((acc, obj) => acc + obj.viewsCount, 0);
   }
 
   public async getListAllCities(): Promise<CityEntity[]> {
@@ -205,21 +191,6 @@ export class CarsService {
 
   public async removeCar(carId: string): Promise<void> {
     await this.carRepository.delete({ id: carId });
-  }
-
-  private async getCarContViews(
-    carId: string,
-  ): Promise<[CarEntity, CarViewsEntity]> {
-    const car = await this.getCar(carId);
-    const countView = await this.carViesRepository.findOneBy({ car_id: carId });
-    if (!countView) {
-      await this.carViesRepository.save(
-        this.carViesRepository.create({
-          car_id: carId,
-        }),
-      );
-    }
-    return [car, countView];
   }
 
   private async getCar(carId: string): Promise<CarEntity> {

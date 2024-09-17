@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -152,10 +153,18 @@ export class AdminPanelService {
   }
 
   public async addCity(dto: BaseCityReqDto): Promise<BaseCityResDto> {
+    const city = await this.cityRepository.findOneBy({ name: dto.name });
+    if (city) {
+      throw new ConflictException('This city already exists!');
+    }
     return await this.cityRepository.save(dto);
   }
 
   public async addCarBrand(dto: BaseBrandReqDto): Promise<BaseBrandResDto> {
+    const brand = await this.brandRepository.findOneBy({ name: dto.name });
+    if (brand) {
+      throw new ConflictException('The brand has already exists!');
+    }
     return await this.brandRepository.save(dto);
   }
 
@@ -164,8 +173,12 @@ export class AdminPanelService {
     brandId: string,
   ): Promise<BaseModelResDto> {
     const brand = await this.brandRepository.findOneBy({ id: brandId });
+    const model = await this.modelRepository.findOneBy({ name: dto.name });
     if (!brand) {
       throw new NotFoundException('The brand does not exist!');
+    }
+    if (model) {
+      throw new ConflictException('The model has already exists!');
     }
     return await this.modelRepository.save(
       this.modelRepository.create({

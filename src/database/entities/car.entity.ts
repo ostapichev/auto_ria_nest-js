@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { CurrencyEnum } from '../../modules/currency-rate/enums/currency.enum';
 import { BrandCarEntity } from './brand-car.entity';
@@ -62,8 +62,7 @@ export class CarEntity extends CreateUpdateModel {
   @JoinColumn({ name: 'user_id' })
   user?: UserEntity;
 
-  @OneToOne(() => CarViewsEntity, (carViews) => carViews.car, {
-    eager: true,
+  @OneToMany(() => CarViewsEntity, (carViews) => carViews.car, {
     onDelete: 'CASCADE',
   })
   views?: CarViewsEntity;
