@@ -15,5 +15,6 @@ export class CarResDto extends PickType(BaseCarResDto, [
   'active',
   'created',
   'updated',
+  'start_currencies_rate',
   'user_id',
 ]) {}

@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
+import { MailSenderService } from '../../mail-sender/services/mail-sender.service';
 import { BadCountRepository } from '../../repository/services/bad-count.repository';
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
@@ -19,6 +20,7 @@ export class BadWordsGuard implements CanActivate {
     private readonly userRepository: UserRepository,
     private readonly authCashService: AuthCacheService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
+    private readonly mailSenderService: MailSenderService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

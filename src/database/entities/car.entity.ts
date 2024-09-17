@@ -1,9 +1,18 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 
 import { CurrencyEnum } from '../../modules/currency-rate/enums/currency.enum';
 import { BrandCarEntity } from './brand-car.entity';
 import { CarViewsEntity } from './car-views.entity';
 import { CityEntity } from './city.entity';
+import { CurrencyRateEntity } from './currency-rate.entity';
 import { TableNameEnum } from './enums/table-name.enum';
 import { ModelCarEntity } from './model-car.entity';
 import { CreateUpdateModel } from './models';
@@ -66,4 +75,8 @@ export class CarEntity extends CreateUpdateModel {
     onDelete: 'CASCADE',
   })
   views?: CarViewsEntity;
+
+  @ManyToMany(() => CurrencyRateEntity, (entity) => entity.cars)
+  @JoinTable()
+  start_currencies_rate?: CurrencyRateEntity[];
 }

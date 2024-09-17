@@ -85,5 +85,8 @@ export class BaseCarResDto {
   updated: Date;
 
   @ApiProperty({})
+  start_currencies_rate: string[];
+
+  @ApiProperty({})
   user_id: string;
 }

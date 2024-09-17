@@ -14,5 +14,6 @@ export class CarListItemResDto extends PickType(BaseCarResDto, [
   'update_price',
   'currency',
   'created',
+  'start_currencies_rate',
   'user_id',
 ]) {}

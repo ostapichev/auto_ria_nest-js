@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as moment from 'moment';
 import { Between } from 'typeorm';
 
 import { BrandCarEntity } from '../../../database/entities/brand-car.entity';
@@ -20,6 +21,7 @@ import { BrandRepository } from '../../repository/services/brand.repository';
 import { CarRepository } from '../../repository/services/car.repository';
 import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
 import { CityRepository } from '../../repository/services/city.repository';
+import { CurrencyRateRepository } from '../../repository/services/currency-rate.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
 import { UserRepository } from '../../repository/services/user.repository';
 import { CarViewReqDto } from '../dto/req/car-view-req.dto';
@@ -37,6 +39,7 @@ export class CarsService {
     private readonly modelRepository: ModelRepository,
     private readonly userRepository: UserRepository,
     private readonly cityRepository: CityRepository,
+    private readonly currencyRateRepository: CurrencyRateRepository,
   ) {}
 
   public async create(
@@ -44,6 +47,12 @@ export class CarsService {
     dto: CreateCarReqDto,
     params: IParams,
   ): Promise<CarEntity> {
+    const formattedDate = moment().format('YYYY-MM-DD');
+    const startDate = moment(formattedDate).startOf('day').toDate();
+    const endDate = moment(formattedDate).endOf('day').toDate();
+    const currenciesRate = await this.currencyRateRepository.find({
+      where: { created: Between(startDate, endDate) },
+    });
     const { cityId, brandId, modelId } = params;
     const { cars, userId, role, account } = userData;
     const city = await this.cityRepository.findOneBy({ id: cityId });
@@ -66,7 +75,7 @@ export class CarsService {
           city_id: cityId,
           brand_id: brandId,
           model_id: modelId,
-          active: true,
+          start_currencies_rate: currenciesRate,
         }),
       );
     }

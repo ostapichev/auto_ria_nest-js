@@ -32,6 +32,9 @@ export class CarMapper {
       currency: entity.currency,
       model: entity.model_id,
       created: entity.created,
+      start_currencies_rate: entity.start_currencies_rate.map(
+        (currency_rate) => currency_rate.id,
+      ),
       user_id: entity.user_id,
     };
   }
@@ -51,6 +54,9 @@ export class CarMapper {
       active: entity.active,
       created: entity.created,
       updated: entity.updated,
+      start_currencies_rate: entity.start_currencies_rate.map(
+        (currency_rate) => currency_rate.id,
+      ),
       user_id: entity.user_id,
     };
   }

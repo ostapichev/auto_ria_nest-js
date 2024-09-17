@@ -31,6 +31,7 @@ export class CarRepository extends Repository<CarEntity> {
     query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     const qb = this.createQueryBuilder('car');
+    qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
     if (query.search) {
       qb.andWhere('CONCAT(car.title, car.description) ILIKE :search');
       qb.setParameter('search', `%${query.search}%`);

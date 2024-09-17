@@ -11,6 +11,7 @@ export class CityCurrencyQueryDto {
   @Transform(TransformHelper.toLowerCase)
   @IsUUID()
   @IsOptional()
+  @Type(() => String)
   cityId?: string = null;
 
   @ApiProperty({ example: 'USD' })
