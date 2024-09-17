@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { badWords } from '../../../common/constants/bad-words';
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
@@ -28,7 +29,6 @@ export class BadWordsGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const { userId, email, deviceId } = request.user;
-    const badWords = ['fuck', 'sheet'];
     const hasBadWord = badWords.some((badWord: string) =>
       request.body.content.toLowerCase().includes(badWord),
     );

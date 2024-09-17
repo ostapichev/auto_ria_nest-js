@@ -46,7 +46,7 @@ export class AuthService {
         dto.deviceId,
       ),
     ]);
-    return { user: UserMapper.toResponseDTO(user), tokens };
+    return { user: UserMapper.toResponseItemDTO(user), tokens };
   }
 
   public async signIn(dto: SignInReqDto): Promise<AuthResDto> {
@@ -55,7 +55,7 @@ export class AuthService {
       select: { id: true, password: true, status: true },
     });
     if (!user || !user.status) {
-      throw new UnauthorizedException('The user does not exist or is blocked');
+      throw new UnauthorizedException('The user does not exist or is banned');
     }
     const isPasswordValid = bcrypt.compare(dto.password, user.password);
     if (!isPasswordValid) {
@@ -87,7 +87,7 @@ export class AuthService {
       ),
     ]);
     const userEntity = await this.userRepository.findOneBy({ id: user.id });
-    return { user: UserMapper.toResponseDTO(userEntity), tokens };
+    return { user: UserMapper.toResponseItemDTO(userEntity), tokens };
   }
 
   public async refresh(userData: IUserData): Promise<TokenPairResDto> {

@@ -12,6 +12,7 @@ export class UserResDto extends PickType(BaseUserResDto, [
   'account',
   'balance',
   'status',
+  'cars',
   'createdAt',
   'updatedAt',
 ]) {}

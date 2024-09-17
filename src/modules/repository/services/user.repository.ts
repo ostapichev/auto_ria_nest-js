@@ -14,6 +14,7 @@ export class UserRepository extends Repository<UserEntity> {
     query: ListQueryDto,
   ): Promise<[UserEntity[], number]> {
     const qb = this.createQueryBuilder('user');
+    qb.leftJoinAndSelect('user.cars', 'car');
     qb.andWhere('user.role != :role', { role: 'superuser' });
     if (query.search) {
       qb.andWhere('CONCAT(user.name, user.email) ILIKE :search');
@@ -22,5 +23,12 @@ export class UserRepository extends Repository<UserEntity> {
     qb.take(query.limit);
     qb.skip((query.page - 1) * query.limit);
     return await qb.getManyAndCount();
+  }
+
+  public async getByIdUser(userId: string): Promise<UserEntity> {
+    const qb = this.createQueryBuilder('user');
+    qb.leftJoinAndSelect('user.cars', 'car');
+    qb.andWhere('user.id = :userId', { userId });
+    return await qb.getOneOrFail();
   }
 }

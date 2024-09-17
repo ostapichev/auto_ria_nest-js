@@ -84,7 +84,7 @@ export class UsersService {
   }
 
   public async findOne(userId: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const user = await this.userRepository.getByIdUser(userId);
     if (!user) {
       throw new NotFoundException(`User with id ${userId} not found`);
     }

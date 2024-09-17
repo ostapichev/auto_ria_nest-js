@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 
 import { TransformHelper } from '../../../../common/helpers/transform.helper';
+import { ColorCarEnum } from '../../../../database/entities/enums/color-car.enum';
 import { CurrencyEnum } from '../../../currency-rate/enums/currency.enum';
 
 export class BaseCarReqDto {
@@ -52,7 +53,7 @@ export class BaseCarReqDto {
   @Length(2, 20)
   @Transform(TransformHelper.trim)
   @Type(() => String)
-  color: string;
+  color: ColorCarEnum;
 
   @ApiProperty({ example: 20000 })
   @IsNumber()

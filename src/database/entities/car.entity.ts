@@ -13,6 +13,7 @@ import { BrandCarEntity } from './brand-car.entity';
 import { CarViewsEntity } from './car-views.entity';
 import { CityEntity } from './city.entity';
 import { CurrencyRateEntity } from './currency-rate.entity';
+import { ColorCarEnum } from './enums/color-car.enum';
 import { TableNameEnum } from './enums/table-name.enum';
 import { ModelCarEntity } from './model-car.entity';
 import { CreateUpdateModel } from './models';
@@ -30,7 +31,7 @@ export class CarEntity extends CreateUpdateModel {
   description: string;
 
   @Column('text')
-  color: string;
+  color: ColorCarEnum;
 
   @Column('int')
   start_price: number;

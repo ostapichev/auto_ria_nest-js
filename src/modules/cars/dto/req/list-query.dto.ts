@@ -4,10 +4,6 @@ import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { TransformHelper } from '../../../../common/helpers/transform.helper';
 
 export class ListQueryDto {
-  @IsString()
-  @IsOptional()
-  currencyRate?: string;
-
   @Type(() => Number)
   @IsInt()
   @Max(100)

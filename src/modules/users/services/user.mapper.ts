@@ -4,6 +4,7 @@ import { UserListResDto } from '../../admin-panel/dto/res/user-list.res.dto';
 import { IJwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { ListQueryDto } from '../../cars/dto/req/list-query.dto';
+import { UserResItemDto } from '../dto/res/user.item.res.dto';
 import { UserResDto } from '../dto/res/user.res.dto';
 import { UserResPublicDto } from '../dto/res/user.res-public.dto';
 
@@ -32,6 +33,24 @@ export class UserMapper {
       account: data.account,
       balance: Number(data.balance),
       status: true,
+      cars: data.cars.map((car) => car.id),
+      createdAt: data.created,
+      updatedAt: data.updated,
+    };
+  }
+
+  public static toResponseItemDTO(data: UserEntity): UserResItemDto {
+    const awsConfig = ConfigStaticService.get().aws;
+    return {
+      id: data.id,
+      image: data.image ? `${awsConfig.bucketUrl}/${data.image}` : null,
+      name: data.name,
+      phone: data.phone,
+      email: data.email,
+      role: data.role,
+      account: data.account,
+      balance: Number(data.balance),
+      status: true,
       createdAt: data.created,
       updatedAt: data.updated,
     };
@@ -46,6 +65,7 @@ export class UserMapper {
       phone: data.phone,
       email: data.email,
       createdAt: data.created,
+      cars: data.cars.map((car) => car.id),
     };
   }
 

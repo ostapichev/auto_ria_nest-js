@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ColorCarEnum } from '../../../../database/entities/enums/color-car.enum';
 import { CurrencyEnum } from '../../../currency-rate/enums/currency.enum';
 
 export class BaseCarResDto {
@@ -40,7 +41,7 @@ export class BaseCarResDto {
     example: 'Car color',
     description: 'Car color',
   })
-  color: string;
+  color: ColorCarEnum;
 
   @ApiProperty({
     example: 10000,
