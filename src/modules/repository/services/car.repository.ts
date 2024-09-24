@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
-import { CarEntity } from '../../../database/entities/car.entity';
+import { CarEntity } from '../../../database/entities';
 import { ListQueryDto } from '../../cars/dto/req/list-query.dto';
 
 @Injectable()
@@ -15,10 +15,11 @@ export class CarRepository extends Repository<CarEntity> {
     query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     const qb = this.createQueryBuilder('car');
+    qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
     qb.leftJoinAndSelect('car.user', 'user');
-    qb.setParameter('userId', userId);
+    qb.where('car.user_id = :userId', { userId });
     if (query.search) {
-      qb.andWhere('CONCAT(car.brand, article.model) ILIKE :search');
+      qb.andWhere('CONCAT(car.brand, car.model) ILIKE :search');
       qb.setParameter('search', `%${query.search}%`);
     }
     qb.orderBy('car.created', 'DESC');
@@ -32,6 +33,7 @@ export class CarRepository extends Repository<CarEntity> {
   ): Promise<[CarEntity[], number]> {
     const qb = this.createQueryBuilder('car');
     qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
+    qb.andWhere('car.active != :active', { active: false });
     if (query.search) {
       qb.andWhere('CONCAT(car.title, car.description) ILIKE :search');
       qb.setParameter('search', `%${query.search}%`);
@@ -39,5 +41,12 @@ export class CarRepository extends Repository<CarEntity> {
     qb.take(query.limit);
     qb.skip((query.page - 1) * query.limit);
     return await qb.getManyAndCount();
+  }
+
+  public async getCar(carId: string): Promise<CarEntity> {
+    const qb = this.createQueryBuilder('car');
+    qb.where('car.id = :carId', { carId });
+    qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
+    return await qb.getOne();
   }
 }

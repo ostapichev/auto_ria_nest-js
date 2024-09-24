@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CurrencyRateEntity } from '../../database/entities/currency-rate.entity';
 
+import { CurrencyRateEntity } from '../../database/entities';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { CurrencyRateService } from './services/currency-rate.service';
 

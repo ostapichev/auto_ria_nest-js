@@ -2,7 +2,7 @@ import { Module, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 
-import { Config, RedisConfig } from '../../config/config.type';
+import { Config, RedisConfig } from '../../config';
 import { REDIS_CLIENT } from './constants/redis.constants';
 import { RedisService } from './services/redis.service';
 

@@ -9,7 +9,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { AwsConfig, Config } from '../../../config/config.type';
+import { AwsConfig, Config } from '../../../config';
 import { LoggerService } from '../../logger/services/logger.service';
 import { ContentType } from '../enums/content-type.enum';
 

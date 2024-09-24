@@ -71,4 +71,4 @@ export type PrivateBankConfig = {
 
 export type TimeZoneConfig = {
   timeZone: string;
-}
+};

@@ -54,5 +54,5 @@ export default (): Config => ({
   },
   timeZone: {
     timeZone: process.env.LOCAL_TIME_ZONE,
-  }
+  },
 });

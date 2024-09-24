@@ -1,5 +1,5 @@
-import { ConfigStaticService } from '../../../config/config-static';
-import { UserEntity } from '../../../database/entities/user.entity';
+import { ConfigStaticService } from '../../../config';
+import { UserEntity } from '../../../database/entities';
 import { UserListResDto } from '../../admin-panel/dto/res/user-list.res.dto';
 import { IJwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
@@ -50,7 +50,7 @@ export class UserMapper {
       role: data.role,
       account: data.account,
       balance: Number(data.balance),
-      status: true,
+      status: data.status,
       createdAt: data.created,
       updatedAt: data.updated,
     };

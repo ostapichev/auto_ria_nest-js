@@ -4,6 +4,7 @@ import { ListQueryDto } from '../dto/req/list-query.dto';
 import { CarResDto } from '../dto/res/car.res.dto';
 import { CarListResDto } from '../dto/res/car-list.res.dto';
 import { CarListItemResDto } from '../dto/res/car-list-item.res.dto';
+import { CarUpdateResDto } from '../dto/res/car-update-res.dto';
 
 export class CarMapper {
   public static toResponseListDTO(
@@ -57,6 +58,25 @@ export class CarMapper {
       start_currencies_rate: entity.start_currencies_rate.map(
         (currency_rate) => currency_rate.id,
       ),
+      user_id: entity.user_id,
+    };
+  }
+
+  public static toResponseUpdateDTO(entity: CarEntity): CarUpdateResDto {
+    const awsConfig = ConfigStaticService.get().aws;
+    return {
+      id: entity.id,
+      photo: entity.photo ? `${awsConfig.bucketUrl}/${entity.photo}` : null,
+      title: entity.title,
+      description: entity.description,
+      color: entity.color,
+      start_price: Number(entity.start_price),
+      update_price: Number(entity.update_price),
+      currency: entity.currency,
+      year: Number(entity.year),
+      active: entity.active,
+      created: entity.created,
+      updated: entity.updated,
       user_id: entity.user_id,
     };
   }

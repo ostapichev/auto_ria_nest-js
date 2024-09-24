@@ -4,8 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { UserEntity } from '../../../database/entities/user.entity';
+import { UserEntity } from '../../../database/entities';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
+import { BaseResDto } from '../../mail-sender/dto/res/base-res.dto';
 import { MessageRepository } from '../../repository/services/message.repository';
 import { UserRepository } from '../../repository/services/user.repository';
 import { BaseMessageReqDto } from '../dto/req/base-message.req.dto';
@@ -79,9 +80,9 @@ export class ChatService {
     return await this.messageRepository.save(message);
   }
 
-  public async deleteMessage(messageId: string): Promise<string> {
+  public async deleteMessage(messageId: string): Promise<BaseResDto> {
     await this.messageRepository.delete(messageId);
-    return 'Message deleted successfully!';
+    return { message: 'Message deleted successfully!' };
   }
 
   private async findUserCorrect(

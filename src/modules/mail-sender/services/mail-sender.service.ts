@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config/dist/config.service';
 import { Transporter } from 'nodemailer';
 import * as nodemailer from 'nodemailer';
 
-import { Config, EmailConfig } from '../../../config/config.type';
+import { Config, EmailConfig } from '../../../config';
 import { BaseMailReqDto } from '../dto/req/base-mail-sender.req.dto';
 
 @Injectable()

@@ -2,10 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 
-import { Config, SuperUserConfig } from '../../../config/config.type';
-import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
-import { UserEntity } from '../../../database/entities/user.entity';
+import { Config, SuperUserConfig } from '../../../config';
+import { UserEntity } from '../../../database/entities';
+import {
+  AccountTypeEnum,
+  UserRoleEnum,
+} from '../../../database/entities/enums';
 import { UserRepository } from '../../repository/services/user.repository';
 
 @Injectable()
@@ -21,13 +23,15 @@ export class SuperUserService {
     });
     if (!user) {
       const config = this.configService.get<SuperUserConfig>('superuser');
+      const password = await bcrypt.hash(config.password, 10);
       await this.userRepository.save({
         name: config.name,
         phone: config.phone,
         email: config.email,
-        password: await bcrypt.hash(config.password, 10),
+        password: password,
         role: UserRoleEnum.SUPERUSER,
         account: AccountTypeEnum.PREMIUM,
+        status: true,
       });
       Logger.log('Super user created!');
       return user;

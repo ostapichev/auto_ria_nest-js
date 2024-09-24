@@ -2,7 +2,7 @@ import { Column, Entity, ManyToMany } from 'typeorm';
 
 import { CurrencyEnum } from '../../modules/currency-rate/enums/currency.enum';
 import { CarEntity } from './car.entity';
-import { TableNameEnum } from './enums/table-name.enum';
+import { TableNameEnum } from './enums';
 import { CreateUpdateModel } from './models';
 
 @Entity(TableNameEnum.CURRENCIES_RATE)

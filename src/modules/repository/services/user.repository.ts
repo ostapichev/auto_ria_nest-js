@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
-import { UserEntity } from '../../../database/entities/user.entity';
+import { UserEntity } from '../../../database/entities';
 import { ListQueryDto } from '../../cars/dto/req/list-query.dto';
 
 @Injectable()
@@ -27,8 +27,8 @@ export class UserRepository extends Repository<UserEntity> {
 
   public async getByIdUser(userId: string): Promise<UserEntity> {
     const qb = this.createQueryBuilder('user');
+    qb.where('user.id = :userId', { userId });
     qb.leftJoinAndSelect('user.cars', 'car');
-    qb.andWhere('user.id = :userId', { userId });
-    return await qb.getOneOrFail();
+    return await qb.getOne();
   }
 }

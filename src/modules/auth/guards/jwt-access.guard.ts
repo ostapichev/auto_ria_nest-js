@@ -27,7 +27,6 @@ export class JwtAccessGuard implements CanActivate {
       context.getClass(),
     ]);
     if (skipAuth) return true;
-
     const request = context.switchToHttp().getRequest();
     const accessToken = request.get('Authorization')?.split('Bearer ')[1];
     if (!accessToken) {
@@ -40,7 +39,6 @@ export class JwtAccessGuard implements CanActivate {
     if (!payload) {
       throw new UnauthorizedException();
     }
-
     const isAccessTokenExist = await this.authCacheService.isAccessTokenExist(
       payload.userId,
       payload.deviceId,
@@ -49,7 +47,6 @@ export class JwtAccessGuard implements CanActivate {
     if (!isAccessTokenExist) {
       throw new UnauthorizedException();
     }
-
     const user = await this.userRepository.findOne({
       where: { id: payload.userId },
       relations: ['cars'],

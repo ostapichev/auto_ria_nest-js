@@ -13,8 +13,7 @@ import { BrandCarEntity } from './brand-car.entity';
 import { CarViewsEntity } from './car-views.entity';
 import { CityEntity } from './city.entity';
 import { CurrencyRateEntity } from './currency-rate.entity';
-import { ColorCarEnum } from './enums/color-car.enum';
-import { TableNameEnum } from './enums/table-name.enum';
+import { ColorCarEnum, TableNameEnum } from './enums';
 import { ModelCarEntity } from './model-car.entity';
 import { CreateUpdateModel } from './models';
 import { UserEntity } from './user.entity';
@@ -37,7 +36,7 @@ export class CarEntity extends CreateUpdateModel {
   start_price: number;
 
   @Column('int', { default: 0 })
-  update_price?: number;
+  update_price: number;
 
   @Column('text', { default: CurrencyEnum.UAH })
   currency: CurrencyEnum;
@@ -50,31 +49,33 @@ export class CarEntity extends CreateUpdateModel {
 
   @Column('string', { nullable: true })
   brand_id: string;
-  @ManyToOne(() => BrandCarEntity, (entity) => entity.cars)
+  @ManyToOne(() => BrandCarEntity, (entity) => entity.cars, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'brand_id' })
-  brand?: BrandCarEntity;
+  brand: BrandCarEntity;
 
   @Column('string', { nullable: true })
   model_id: string;
-  @ManyToOne(() => ModelCarEntity, (entity) => entity.cars)
+  @ManyToOne(() => ModelCarEntity, (entity) => entity.cars, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'model_id' })
-  model?: ModelCarEntity;
+  model: ModelCarEntity;
 
   @Column('string', { nullable: true })
   city_id: string;
-  @ManyToOne(() => CityEntity, (entity) => entity.cars)
+  @ManyToOne(() => CityEntity, (entity) => entity.cars, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'city_id' })
-  city?: CityEntity;
+  city: CityEntity;
 
   @Column('string')
   user_id: string;
-  @ManyToOne(() => UserEntity, (entity) => entity.cars)
+  @ManyToOne(() => UserEntity, (entity) => entity.cars, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
-  user?: UserEntity;
+  user: UserEntity;
 
-  @OneToMany(() => CarViewsEntity, (carViews) => carViews.car, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => CarViewsEntity, (carViews) => carViews.car)
   views?: CarViewsEntity;
 
   @ManyToMany(() => CurrencyRateEntity, (entity) => entity.cars)

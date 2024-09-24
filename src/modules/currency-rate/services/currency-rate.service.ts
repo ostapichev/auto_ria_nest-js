@@ -6,12 +6,8 @@ import * as moment from 'moment-timezone';
 import { lastValueFrom } from 'rxjs';
 import { Between } from 'typeorm';
 
-import {
-  Config,
-  PrivateBankConfig,
-  TimeZoneConfig,
-} from '../../../config/config.type';
-import { CurrencyRateEntity } from '../../../database/entities/currency-rate.entity';
+import { Config, PrivateBankConfig, TimeZoneConfig } from '../../../config';
+import { CurrencyRateEntity } from '../../../database/entities';
 import { CurrencyRateRepository } from '../../repository/services/currency-rate.repository';
 
 @Injectable()
@@ -19,7 +15,7 @@ export class CurrencyRateService {
   constructor(
     private readonly httpService: HttpService,
     private readonly currencyRateRepository: CurrencyRateRepository,
-    private configService: ConfigService<Config>,
+    private readonly configService: ConfigService<Config>,
   ) {}
 
   @Cron('0 0 * * *', {
@@ -28,24 +24,25 @@ export class CurrencyRateService {
   public async getExchangeRate(): Promise<CurrencyRateEntity[]> {
     const config = this.configService.get<PrivateBankConfig>('apiPrivate');
     const getRatesToday = await this.getCurrencyRate();
-    if (getRatesToday.length > 0) {
+    if (getRatesToday.length) {
       return getRatesToday;
     }
-    const response = this.httpService.get(config.url);
-    const result = await lastValueFrom(response);
-    if (!response) {
-      throw new BadRequestException('No response from server!');
+    try {
+      const response = this.httpService.get(config.url);
+      const result = await lastValueFrom(response);
+      const currenciesRate = result.data.map((currency: CurrencyRateEntity) => {
+        const entity = new CurrencyRateEntity();
+        entity.ccy = currency.ccy;
+        entity.base_ccy = currency.base_ccy;
+        entity.sale = currency.sale;
+        entity.buy = currency.buy;
+        return entity;
+      });
+      await this.currencyRateRepository.save(currenciesRate);
+      return result.data;
+    } catch (e) {
+      throw new BadRequestException(e.message);
     }
-    const currenciesRate = result.data.map((currency: CurrencyRateEntity) => {
-      const entity = new CurrencyRateEntity();
-      entity.ccy = currency.ccy;
-      entity.base_ccy = currency.base_ccy;
-      entity.sale = currency.sale;
-      entity.buy = currency.buy;
-      return entity;
-    });
-    await this.currencyRateRepository.save(currenciesRate);
-    return result.data;
   }
 
   private async getCurrencyRate(): Promise<CurrencyRateEntity[]> {

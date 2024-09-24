@@ -7,16 +7,23 @@ import {
 import * as moment from 'moment';
 import { Between } from 'typeorm';
 
-import { BrandCarEntity } from '../../../database/entities/brand-car.entity';
-import { CarEntity } from '../../../database/entities/car.entity';
-import { CarViewsEntity } from '../../../database/entities/car-views.entity';
-import { CityEntity } from '../../../database/entities/city.entity';
-import { CurrencyRateEntity } from '../../../database/entities/currency-rate.entity';
-import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
-import { ModelCarEntity } from '../../../database/entities/model-car.entity';
+import {
+  BrandCarEntity,
+  CarEntity,
+  CarViewsEntity,
+  CityEntity,
+  CurrencyRateEntity,
+  ModelCarEntity,
+} from '../../../database/entities';
+import {
+  AccountTypeEnum,
+  UserRoleEnum,
+} from '../../../database/entities/enums';
 import { CityCurrencyQueryDto } from '../../admin-panel/dto/req/city-id-req.dto';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
+import { CurrencyRateService } from '../../currency-rate/services/currency-rate.service';
+import { ContentType } from '../../file-storage/enums/content-type.enum';
+import { FileStorageService } from '../../file-storage/services/file-storage.service';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CarRepository } from '../../repository/services/car.repository';
 import { CarViewsRepository } from '../../repository/services/car-viwes.repository';
@@ -34,12 +41,14 @@ import { IParams } from '../interfaces/params.interface';
 export class CarsService {
   constructor(
     private readonly carRepository: CarRepository,
+    private readonly fileStorageService: FileStorageService,
     private readonly carViesRepository: CarViewsRepository,
     private readonly brandRepository: BrandRepository,
     private readonly modelRepository: ModelRepository,
     private readonly userRepository: UserRepository,
     private readonly cityRepository: CityRepository,
     private readonly currencyRateRepository: CurrencyRateRepository,
+    private readonly currencyRateService: CurrencyRateService,
   ) {}
 
   public async create(
@@ -47,6 +56,7 @@ export class CarsService {
     dto: CreateCarReqDto,
     params: IParams,
   ): Promise<CarEntity> {
+    await this.currencyRateService.getExchangeRate();
     const formattedDate = moment().format('YYYY-MM-DD');
     const startDate = moment(formattedDate).startOf('day').toDate();
     const endDate = moment(formattedDate).endOf('day').toDate();
@@ -95,15 +105,42 @@ export class CarsService {
     return await this.carRepository.getListAllCars(query);
   }
 
-  public async findOneCar(carId: string): Promise<CarEntity> {
+  public async findOneCar(
+    carId: string,
+    userData: IUserData,
+  ): Promise<CarEntity> {
     const car = await this.getCar(carId);
-    await this.carViesRepository.save(
-      this.carViesRepository.create({
-        viewsCount: 1,
-        car_id: carId,
-      }),
-    );
+    if (userData.userId !== car.user_id) {
+      await this.carViesRepository.save(
+        this.carViesRepository.create({
+          viewsCount: 1,
+          car_id: carId,
+        }),
+      );
+    }
     return car;
+  }
+
+  public async uploadPhotoCar(
+    photo: Express.Multer.File,
+    carId: string,
+  ): Promise<void> {
+    const image = await this.fileStorageService.uploadFile(
+      photo,
+      ContentType.CAR,
+      carId,
+    );
+    await this.carRepository.update(carId, { photo: image });
+  }
+
+  public async deletePhotoCar(carId: string): Promise<void> {
+    const car = await this.getCar(carId);
+    if (car.photo) {
+      await this.fileStorageService.deleteFile(car.photo);
+      await this.carRepository.save(
+        this.carRepository.merge(car, { photo: null }),
+      );
+    }
   }
 
   public async getCountViews(query: CarViewReqDto): Promise<number> {
@@ -203,9 +240,9 @@ export class CarsService {
   }
 
   private async getCar(carId: string): Promise<CarEntity> {
-    const car = await this.carRepository.findOneBy({ id: carId });
+    const car = await this.carRepository.getCar(carId);
     if (!car) {
-      throw new NotFoundException(`Car with id ${carId} not found`);
+      throw new NotFoundException(`Car not found`);
     }
     return car;
   }

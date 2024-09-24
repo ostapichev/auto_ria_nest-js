@@ -34,13 +34,11 @@ export class JwtRefreshGuard implements CanActivate {
     if (!payload) {
       throw new UnauthorizedException();
     }
-
     const isRefreshTokenExist =
       await this.refreshTokenRepository.isRefreshTokenExist(refreshToken);
     if (!isRefreshTokenExist) {
       throw new UnauthorizedException();
     }
-
     const user = await this.userRepository.findOneBy({
       id: payload.userId,
     });

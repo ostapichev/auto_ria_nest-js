@@ -17,7 +17,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { UserEntity } from '../../database/entities/user.entity';
+import { UserEntity } from '../../database/entities';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
 import { ListQueryDto } from '../cars/dto/req/list-query.dto';

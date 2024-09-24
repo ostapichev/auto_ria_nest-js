@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
-import { TableNameEnum } from './enums/table-name.enum';
+import { TableNameEnum } from './enums';
 import { CreateUpdateModel } from './models';
 import { UserEntity } from './user.entity';
 
@@ -9,13 +9,17 @@ export class MessageEntity extends CreateUpdateModel {
   @Column('text')
   content: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.send_messages)
+  @ManyToOne(() => UserEntity, (user) => user.send_messages, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'to_user_id' })
   to_user: UserEntity;
   @Column()
   to_user_id: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.get_messages)
+  @ManyToOne(() => UserEntity, (user) => user.get_messages, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'from_user_id' })
   from_user: UserEntity;
   @Column()

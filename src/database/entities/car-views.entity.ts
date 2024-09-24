@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { CarEntity } from './car.entity';
-import { TableNameEnum } from './enums/table-name.enum';
+import { TableNameEnum } from './enums';
 import { CreateUpdateModel } from './models';
 
 @Entity(TableNameEnum.CAR_VIEWS)

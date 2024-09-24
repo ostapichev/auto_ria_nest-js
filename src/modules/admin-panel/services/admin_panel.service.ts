@@ -6,9 +6,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
-import { UserEntity } from '../../../database/entities/user.entity';
+import { UserEntity } from '../../../database/entities';
+import {
+  AccountTypeEnum,
+  UserRoleEnum,
+} from '../../../database/entities/enums';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
 import { ListQueryDto } from '../../cars/dto/req/list-query.dto';

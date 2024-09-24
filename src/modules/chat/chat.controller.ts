@@ -19,10 +19,11 @@ import {
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
+import { AuthorGuard } from '../cars/guards/author.guard';
+import { BadWordsGuard } from '../cars/guards/bad-words.guard';
+import { BaseResDto } from '../mail-sender/dto/res/base-res.dto';
 import { BaseMessageReqDto } from './dto/req/base-message.req.dto';
 import { BaseMessageResDto } from './dto/res/base-message.res.dto';
-import { AuthorChatGuard } from './guards/author_chat.guard';
-import { BadWordsGuard } from './guards/bad-words.guard';
 import { ChatService } from './services/chat.service';
 
 @ApiTags('Chat')
@@ -54,7 +55,6 @@ export class ChatController {
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
-  @UseGuards(AuthorChatGuard)
   @Get(':from_user_id/get_messages')
   public async findSentMessageFromUser(
     @CurrentUser() userData: IUserData,
@@ -65,7 +65,7 @@ export class ChatController {
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
-  @UseGuards(AuthorChatGuard)
+  @UseGuards(AuthorGuard)
   @Patch(':messageId/edit_message')
   public async editMessage(
     @Param('messageId', ParseUUIDPipe) messageId: string,
@@ -76,12 +76,12 @@ export class ChatController {
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
-  @UseGuards(AuthorChatGuard)
+  @UseGuards(AuthorGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':messageId/delete_message')
   public async deleteMessage(
     @Param('messageId', ParseUUIDPipe) messageId: string,
-  ): Promise<string> {
+  ): Promise<BaseResDto> {
     return await this.chatService.deleteMessage(messageId);
   }
 }

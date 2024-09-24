@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AccountTypeEnum } from '../../../../database/entities/enums/account-type.enum';
-import { UserRoleEnum } from '../../../../database/entities/enums/user-role.enum';
+import {
+  AccountTypeEnum,
+  UserRoleEnum,
+} from '../../../../database/entities/enums';
 
 export class BaseUserResDto {
   @ApiProperty({

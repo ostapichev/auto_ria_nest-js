@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
 
-import { TransformHelper } from '../../../../common/helpers/transform.helper';
+import { TransformHelper } from '../../../../common';
 import { CurrencyEnum } from '../../../currency-rate/enums/currency.enum';
 
 export class CityCurrencyQueryDto {
@@ -14,10 +14,10 @@ export class CityCurrencyQueryDto {
   @Type(() => String)
   cityId?: string = null;
 
-  @ApiProperty({ example: 'USD' })
+  @ApiProperty({ example: CurrencyEnum.USD })
   @Transform(TransformHelper.trim)
   @Transform(TransformHelper.toUpperCase)
   @IsEnum(CurrencyEnum)
-  @Type(() => String)
+  @Type(() => IsEnum)
   currency: CurrencyEnum;
 }

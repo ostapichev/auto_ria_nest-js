@@ -6,8 +6,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
-import { UserEntity } from '../../../database/entities/user.entity';
+import { badWords } from '../../../common';
+import { UserEntity } from '../../../database/entities';
+import { UserRoleEnum } from '../../../database/entities/enums';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
 import { MailSenderService } from '../../mail-sender/services/mail-sender.service';
 import { BadCountRepository } from '../../repository/services/bad-count.repository';
@@ -28,14 +29,23 @@ export class BadWordsGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const { userId, email, deviceId } = request.user;
-    const badWords = ['fuck', 'sheet'];
-    const hasBadWordTitle = badWords.some((badWord: string) =>
-      request.body.title.toLowerCase().includes(badWord),
-    );
-    const hasBadWordDescription = badWords.some((badWord: string) =>
-      request.body.description.toLowerCase().includes(badWord),
-    );
-    if (hasBadWordTitle || hasBadWordDescription) {
+    let hasBadWordDescription: boolean;
+    let hasBadWordTitle: boolean;
+    let hasBadWordContent: boolean;
+    if (request.body.title || request.body.description) {
+      hasBadWordDescription = badWords.some((badWord: string) =>
+        request.body.description.toLowerCase().includes(badWord),
+      );
+      hasBadWordTitle = badWords.some((badWord: string) =>
+        request.body.title.toLowerCase().includes(badWord),
+      );
+    }
+    if (request.body.content) {
+      hasBadWordContent = badWords.some((badWord: string) =>
+        request.body.content.toLowerCase().includes(badWord),
+      );
+    }
+    if (hasBadWordDescription || hasBadWordTitle || hasBadWordContent) {
       const badCount = await this.badCountRepository.findOneBy({
         user_id: userId,
       });
@@ -62,11 +72,15 @@ export class BadWordsGuard implements CanActivate {
           await this.badCountRepository.delete({ user_id: userId });
           await this.authCashService.deleteToken(userId, deviceId);
           await this.refreshTokenRepository.delete({ user_id: userId });
-          await this.mailSenderService.sendMail({
-            to: admin.email,
-            subject: 'The email from cars text of announcement on auto ria.',
-            text: `The user id: ${userId} email: ${email} tried to write bad words 3 times! He is banned!`,
-          });
+          try {
+            await this.mailSenderService.sendMail({
+              to: admin.email,
+              subject: 'The email from auto ria.',
+              text: `The user id: ${userId} email: ${email} tried to write bad words 3 times! He is banned!`,
+            });
+          } catch (e) {
+            throw new BadRequestException(e.message);
+          }
         }
         throw new BadRequestException('The text has some bad words!');
       } else {
@@ -78,6 +92,6 @@ export class BadWordsGuard implements CanActivate {
         throw new BadRequestException('The text has some bad words!');
       }
     }
-    return !hasBadWordTitle || !hasBadWordDescription;
+    return !hasBadWordDescription || hasBadWordTitle || hasBadWordContent;
   }
 }

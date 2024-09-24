@@ -11,17 +11,24 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { BrandCarEntity } from '../../database/entities/brand-car.entity';
-import { CityEntity } from '../../database/entities/city.entity';
-import { ModelCarEntity } from '../../database/entities/model-car.entity';
+import { ApiFile } from '../../common';
+import {
+  BrandCarEntity,
+  CityEntity,
+  ModelCarEntity,
+} from '../../database/entities';
 import { CityCurrencyQueryDto } from '../admin-panel/dto/req/city-id-req.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
@@ -31,9 +38,9 @@ import { CarViewReqDto } from './dto/req/car-view-req.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
 import { ListQueryDto } from './dto/req/list-query.dto';
 import { UpdateCarReqDto } from './dto/req/update-car.dto';
-import { CarResDto } from './dto/res/car.res.dto';
 import { CarListResDto } from './dto/res/car-list.res.dto';
 import { CarListItemResDto } from './dto/res/car-list-item.res.dto';
+import { CarUpdateResDto } from './dto/res/car-update-res.dto';
 import { AuthorGuard } from './guards/author.guard';
 import { BadWordsGuard } from './guards/bad-words.guard';
 import { PremiumGuard } from './guards/premium.guard';
@@ -126,9 +133,34 @@ export class CarsController {
   @Get(':carId')
   public async findOneCar(
     @Param('carId', ParseUUIDPipe) carId: string,
+    @CurrentUser() userData: IUserData,
   ): Promise<CarListItemResDto> {
-    const result = await this.carsService.findOneCar(carId);
+    const result = await this.carsService.findOneCar(carId, userData);
     return CarMapper.toResponseListItemDTO(result);
+  }
+
+  @ApiBearerAuth()
+  @UseInterceptors(FileInterceptor('car-photo'))
+  @ApiConsumes('multipart/form-data')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiFile('car-photo', false, false)
+  @UseGuards(AuthorGuard)
+  @Post(':carId/car-photo')
+  public async uploadPhotoCar(
+    @Param('carId', ParseUUIDPipe) carId: string,
+    @UploadedFile() carPhoto: Express.Multer.File,
+  ): Promise<void> {
+    await this.carsService.uploadPhotoCar(carPhoto, carId);
+  }
+
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthorGuard)
+  @Delete(':carId/car-photo')
+  public async deleteAvatar(
+    @Param('carId', ParseUUIDPipe) carId: string,
+  ): Promise<void> {
+    await this.carsService.deletePhotoCar(carId);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -138,9 +170,9 @@ export class CarsController {
   public async update(
     @Param('carId', ParseUUIDPipe) carId: string,
     @Body() dto: UpdateCarReqDto,
-  ): Promise<CarResDto> {
+  ): Promise<CarUpdateResDto> {
     const result = await this.carsService.updateCar(carId, dto);
-    return CarMapper.toResponseDTO(result);
+    return CarMapper.toResponseUpdateDTO(result);
   }
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })

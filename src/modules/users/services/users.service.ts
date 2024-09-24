@@ -5,8 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
-import { UserEntity } from '../../../database/entities/user.entity';
+import { UserEntity } from '../../../database/entities';
+import {
+  AccountTypeEnum,
+  UserRoleEnum,
+} from '../../../database/entities/enums';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
 import { ContentType } from '../../file-storage/enums/content-type.enum';
@@ -24,7 +27,7 @@ export class UsersService {
   ) {}
 
   public async findMe(userData: IUserData): Promise<UserEntity> {
-    return await this.userRepository.findOneBy({ id: userData.userId });
+    return await this.userRepository.getByIdUser(userData.userId);
   }
 
   public async updateMe(
@@ -85,7 +88,7 @@ export class UsersService {
 
   public async findOne(userId: string): Promise<UserEntity> {
     const user = await this.userRepository.getByIdUser(userId);
-    if (!user) {
+    if (!user || user.role === UserRoleEnum.SUPERUSER) {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
     return user;

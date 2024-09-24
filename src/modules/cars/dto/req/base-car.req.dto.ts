@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
+  IsEnum,
   IsNumber,
   IsOptional,
   IsString,
@@ -9,8 +10,8 @@ import {
   Min,
 } from 'class-validator';
 
-import { TransformHelper } from '../../../../common/helpers/transform.helper';
-import { ColorCarEnum } from '../../../../database/entities/enums/color-car.enum';
+import { TransformHelper } from '../../../../common';
+import { ColorCarEnum } from '../../../../database/entities/enums';
 import { CurrencyEnum } from '../../../currency-rate/enums/currency.enum';
 
 export class BaseCarReqDto {
@@ -49,10 +50,10 @@ export class BaseCarReqDto {
   model: string;
 
   @ApiProperty({ example: 'Car Color' })
-  @IsString()
+  @IsEnum(ColorCarEnum)
   @Length(2, 20)
   @Transform(TransformHelper.trim)
-  @Type(() => String)
+  @Type(() => IsEnum)
   color: ColorCarEnum;
 
   @ApiProperty({ example: 20000 })
@@ -70,8 +71,8 @@ export class BaseCarReqDto {
   update_price?: number;
 
   @ApiProperty({ example: 'USD' })
-  @IsString()
-  @Type(() => String)
+  @IsEnum(CurrencyEnum)
+  @Type(() => IsEnum)
   currency: CurrencyEnum;
 
   @ApiProperty({ example: 2021 })

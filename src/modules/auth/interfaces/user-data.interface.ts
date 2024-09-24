@@ -1,6 +1,8 @@
-import { CarEntity } from '../../../database/entities/car.entity';
-import { AccountTypeEnum } from '../../../database/entities/enums/account-type.enum';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
+import { CarEntity } from '../../../database/entities';
+import {
+  AccountTypeEnum,
+  UserRoleEnum,
+} from '../../../database/entities/enums';
 
 export interface IUserData {
   userId: string;

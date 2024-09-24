@@ -25,10 +25,10 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { ApiFile } from '../../common/decorators/api-file.decorator';
+import { ApiFile } from '../../common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
+import { BaseResDto } from '../mail-sender/dto/res/base-res.dto';
 import { UpdateBalanceDto } from './dto/req/update-balance.dto';
 import { UpdateUserDto } from './dto/req/update-user.dto';
 import { UserResDto } from './dto/res/user.res.dto';
@@ -62,7 +62,7 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
   ): Promise<UserResDto> {
     const result = await this.usersService.updateMe(userData, dto);
-    return UserMapper.toResponseDTO(result);
+    return UserMapper.toResponseItemDTO(result);
   }
 
   @ApiBearerAuth()
@@ -74,9 +74,9 @@ export class UsersController {
   public async addBalance(
     @CurrentUser() userData: IUserData,
     @Body() dto: UpdateBalanceDto,
-  ): Promise<string> {
+  ): Promise<BaseResDto> {
     await this.usersService.addBalanceMe(userData, dto);
-    return `Balance ${dto.balance} UAH added!`;
+    return { message: `Balance ${dto.balance} UAH added!` };
   }
 
   @ApiBearerAuth()
@@ -85,9 +85,11 @@ export class UsersController {
   @ApiConflictResponse({ description: 'Conflict' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @Patch('me/premium_account')
-  public async getPremium(@CurrentUser() userData: IUserData): Promise<string> {
+  public async getPremium(
+    @CurrentUser() userData: IUserData,
+  ): Promise<BaseResDto> {
     await this.usersService.getPremium(userData, 500);
-    return `Premium account took!`;
+    return { message: 'Premium account took!' };
   }
 
   @ApiBearerAuth()
@@ -96,15 +98,14 @@ export class UsersController {
   @ApiConflictResponse({ description: 'Conflict' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @Patch('me/basic_account')
-  public async getBasic(@CurrentUser() userData: IUserData): Promise<string> {
+  public async getBasic(@CurrentUser() userData: IUserData): Promise<BaseResDto> {
     await this.usersService.getBasic(userData);
-    return `Basic account took!`;
+    return { message: 'Basic account took!' };
   }
 
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  @ApiConflictResponse({ description: 'Conflict' })
   @ApiNoContentResponse({ description: 'User has been removed' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('me')
@@ -132,7 +133,8 @@ export class UsersController {
     await this.usersService.deleteAvatar(userData);
   }
 
-  @SkipAuth()
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Get(':userId')
   public async findOne(
     @Param('userId', ParseUUIDPipe) userId: string,

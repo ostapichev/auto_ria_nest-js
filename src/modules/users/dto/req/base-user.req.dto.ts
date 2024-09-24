@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsBoolean,
+  IsBoolean, IsEmail, IsEnum, isEnum,
   IsNumber,
   IsOptional,
   IsString,
@@ -9,15 +9,18 @@ import {
   Matches,
 } from 'class-validator';
 
-import { TransformHelper } from '../../../../common/helpers/transform.helper';
-import { AccountTypeEnum } from '../../../../database/entities/enums/account-type.enum';
-import { UserRoleEnum } from '../../../../database/entities/enums/user-role.enum';
+import { TransformHelper } from '../../../../common';
+import {
+  AccountTypeEnum,
+  UserRoleEnum,
+} from '../../../../database/entities/enums';
 
 export class BaseUserReqDto {
   @ApiProperty({ example: 'http://localhost:3000/images/avatar.png' })
   @IsOptional()
   @IsString()
   @Length(10, 500)
+  @Type(() => String)
   image?: string;
 
   @ApiProperty({ example: 'John' })
@@ -32,13 +35,15 @@ export class BaseUserReqDto {
   @Length(12)
   @Transform(TransformHelper.trim)
   @Matches(/^\d{12}$/)
+  @Type(() => String)
   phone: string;
 
   @ApiProperty({ example: 'test@gmail.com' })
-  @IsString()
+  @IsEmail()
   @Length(0, 300)
   @Transform(TransformHelper.trim)
   @Matches(/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/)
+  @Type(() => IsEmail)
   email: string;
 
   @ApiProperty({ example: '123qwe!@#QWE' })
@@ -46,18 +51,19 @@ export class BaseUserReqDto {
   @Length(0, 300)
   @Transform(TransformHelper.trim)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%_*#?&])[A-Za-z\d@$_!%*#?&]{8,}$/)
+  @Type(() => String)
   password: string;
 
   @ApiProperty({ example: 'user_buy' })
-  @IsString()
+  @IsEnum(UserRoleEnum)
   @Length(3, 50)
-  @Type(() => String)
+  @Type(() => isEnum)
   role?: UserRoleEnum;
 
   @ApiProperty({ example: 'basic' })
-  @IsString()
+  @IsEnum(AccountTypeEnum)
   @Length(3, 50)
-  @Type(() => String)
+  @Type(() => isEnum)
   account?: AccountTypeEnum;
 
   @ApiProperty({ example: 0 })
@@ -67,5 +73,6 @@ export class BaseUserReqDto {
 
   @ApiProperty()
   @IsBoolean()
+  @Type(() => Boolean)
   status?: boolean;
 }

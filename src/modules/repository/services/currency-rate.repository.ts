@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
-import { CurrencyRateEntity } from '../../../database/entities/currency-rate.entity';
+import { CurrencyRateEntity } from '../../../database/entities';
 
 @Injectable()
 export class CurrencyRateRepository extends Repository<CurrencyRateEntity> {

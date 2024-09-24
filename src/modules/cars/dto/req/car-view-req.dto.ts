@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsUUID } from 'class-validator';
 
-import { TransformHelper } from '../../../../common/helpers/transform.helper';
+import { TransformHelper } from '../../../../common';
 
 export class CarViewReqDto {
   @ApiProperty({ example: '4258725c-3f5b-4bda-9ad5-3838192e9d87' })

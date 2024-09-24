@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 
-import { GlobalExceptionFilter } from '../common/http/global-exception.filter';
+import { GlobalExceptionFilter } from '../common';
 import configuration from '../config/configuration';
 import { AdminPanelModule } from './admin-panel/admin_panel.module';
 import { AuthModule } from './auth/auth.module';
