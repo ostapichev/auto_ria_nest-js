@@ -105,6 +105,13 @@ export class CarsService {
     return await this.carRepository.getListAllCars(query);
   }
 
+  public async getListCarsCity(
+    cityId: string,
+    query: ListQueryDto,
+  ): Promise<[CarEntity[], number]> {
+    return await this.carRepository.getListCarsCity(cityId, query);
+  }
+
   public async findOneCar(
     carId: string,
     userData: IUserData,

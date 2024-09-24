@@ -64,6 +64,16 @@ export class CarsController {
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
+  @SkipAuth()
+  @Get('city/:cityId')
+  public async getListCarsCity(
+    @Query() query: ListQueryDto,
+    @Param('cityId', ParseUUIDPipe) cityId: string,
+  ): Promise<CarListResDto> {
+    const [entities, total] = await this.carsService.getListCarsCity(cityId, query);
+    return CarMapper.toResponseListDTO(entities, total, query);
+  }
+
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(BadWordsGuard)
