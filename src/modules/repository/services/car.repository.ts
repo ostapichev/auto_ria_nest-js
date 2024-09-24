@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, QueryBuilder, QueryRunner, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { SelectQueryBuilder } from 'typeorm/query-builder/SelectQueryBuilder';
 
 import { CarEntity } from '../../../database/entities';

@@ -70,7 +70,10 @@ export class CarsController {
     @Query() query: ListQueryDto,
     @Param('cityId', ParseUUIDPipe) cityId: string,
   ): Promise<CarListResDto> {
-    const [entities, total] = await this.carsService.getListCarsCity(cityId, query);
+    const [entities, total] = await this.carsService.getListCarsCity(
+      cityId,
+      query,
+    );
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
