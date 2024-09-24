@@ -1,5 +1,5 @@
-import { ConfigStaticService } from '../../../config/config-static';
-import { CarEntity } from '../../../database/entities/car.entity';
+import { ConfigStaticService } from '../../../config';
+import { CarEntity } from '../../../database/entities';
 import { ListQueryDto } from '../dto/req/list-query.dto';
 import { CarResDto } from '../dto/res/car.res.dto';
 import { CarListResDto } from '../dto/res/car-list.res.dto';

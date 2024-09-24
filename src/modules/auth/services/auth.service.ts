@@ -53,9 +53,7 @@ export class AuthService {
     return { user: UserMapper.toResponseItemDTO(user), tokens };
   }
 
-  public async activateUser(
-    accessToken: string,
-  ): Promise<BaseResDto> {
+  public async activateUser(accessToken: string): Promise<BaseResDto> {
     const payload = await this.tokenService.verifyToken(
       accessToken,
       TokenType.ACCESS,

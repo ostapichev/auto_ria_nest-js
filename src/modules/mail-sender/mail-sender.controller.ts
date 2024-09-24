@@ -17,9 +17,7 @@ export class MailSenderController {
   @ApiBearerAuth()
   @ApiTags('Mail Sender')
   @Post('send')
-  public async sendMail(
-    @Body() dto: BaseMailReqDto,
-  ): Promise<BaseResDto> {
+  public async sendMail(@Body() dto: BaseMailReqDto): Promise<BaseResDto> {
     await this.mailService.sendMail(dto);
     return { message: 'Email sent successfully' };
   }

@@ -98,7 +98,9 @@ export class UsersController {
   @ApiConflictResponse({ description: 'Conflict' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @Patch('me/basic_account')
-  public async getBasic(@CurrentUser() userData: IUserData): Promise<BaseResDto> {
+  public async getBasic(
+    @CurrentUser() userData: IUserData,
+  ): Promise<BaseResDto> {
     await this.usersService.getBasic(userData);
     return { message: 'Basic account took!' };
   }
