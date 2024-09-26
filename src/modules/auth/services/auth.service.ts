@@ -41,15 +41,11 @@ export class AuthService {
       this.userRepository.create({ ...dto, password }),
     );
     const tokens = await this.createTokens(user.id, dto.deviceId);
-    try {
-      await this.mailSenderService.sendMail({
-        to: user.email,
-        subject: 'The email from auto ria for registration',
-        text: `For the finally registration push to link: http://localhost:3000/auth/activate/${tokens.accessToken}`,
-      });
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+    await this.mailSenderService.sendMail({
+      to: user.email,
+      subject: 'The email from auto ria for registration',
+      text: `For the finally registration push to link: http://localhost:3000/auth/activate/${tokens.accessToken}`,
+    });
     return { user: UserMapper.toResponseItemDTO(user), tokens };
   }
 
@@ -88,15 +84,11 @@ export class AuthService {
       throw new BadRequestException('The user does not exist!');
     }
     const tokens = await this.createTokens(user.id, deviceId);
-    try {
-      await this.mailSenderService.sendMail({
-        to: email,
-        subject: 'The email from auto ria for recovery password',
-        text: `For recovery password push to link: http://localhost:3000/auth/recovery-password/${tokens.accessToken}`,
-      });
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+    await this.mailSenderService.sendMail({
+      to: email,
+      subject: 'The email from auto ria for recovery password',
+      text: `For recovery password push to link: http://localhost:3000/auth/recovery-password/${tokens.accessToken}`,
+    });
     return { message: `Check your ${email}!` };
   }
 

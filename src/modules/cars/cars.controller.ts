@@ -19,6 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -55,28 +56,7 @@ export class CarsController {
     private readonly currencyCourseService: CurrencyRateService,
   ) {}
 
-  @SkipAuth()
-  @Get()
-  public async getListAllCars(
-    @Query() query: ListQueryDto,
-  ): Promise<CarListResDto> {
-    const [entities, total] = await this.carsService.getListAllCars(query);
-    return CarMapper.toResponseListDTO(entities, total, query);
-  }
-
-  @SkipAuth()
-  @Get('city/:cityId')
-  public async getListCarsCity(
-    @Query() query: ListQueryDto,
-    @Param('cityId', ParseUUIDPipe) cityId: string,
-  ): Promise<CarListResDto> {
-    const [entities, total] = await this.carsService.getListCarsCity(
-      cityId,
-      query,
-    );
-    return CarMapper.toResponseListDTO(entities, total, query);
-  }
-
+  @ApiOperation({ description: 'Create new car' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(BadWordsGuard)
@@ -93,6 +73,31 @@ export class CarsController {
     return CarMapper.toResponseDTO(result);
   }
 
+  @ApiOperation({ description: 'Get all cars' })
+  @SkipAuth()
+  @Get()
+  public async getListAllCars(
+    @Query() query: ListQueryDto,
+  ): Promise<CarListResDto> {
+    const [entities, total] = await this.carsService.getListAllCars(query);
+    return CarMapper.toResponseListDTO(entities, total, query);
+  }
+
+  @ApiOperation({ description: 'Get all cars in the city' })
+  @SkipAuth()
+  @Get('city/:cityId')
+  public async getListCarsCity(
+    @Query() query: ListQueryDto,
+    @Param('cityId', ParseUUIDPipe) cityId: string,
+  ): Promise<CarListResDto> {
+    const [entities, total] = await this.carsService.getListCarsCity(
+      cityId,
+      query,
+    );
+    return CarMapper.toResponseListDTO(entities, total, query);
+  }
+
+  @ApiOperation({ description: 'Get all cars from the user' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get('user-car')
@@ -107,6 +112,7 @@ export class CarsController {
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
+  @ApiOperation({ description: 'Get all cities' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get('cities')
@@ -114,6 +120,7 @@ export class CarsController {
     return await this.carsService.getListAllCities();
   }
 
+  @ApiOperation({ description: 'Get all brands' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get('brands')
@@ -121,6 +128,10 @@ export class CarsController {
     return await this.carsService.getListAllBrands();
   }
 
+  @ApiOperation({
+    description:
+      'Get avg price in the city or the all cities. Only for users with premium account',
+  })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(PremiumGuard)
@@ -132,6 +143,7 @@ export class CarsController {
     return await this.carsService.getAvgPrice(query, currencies);
   }
 
+  @ApiOperation({ description: 'Get models in the brand' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get(':brandId/models')
@@ -141,6 +153,7 @@ export class CarsController {
     return await this.carsService.getListAllModels(brandId);
   }
 
+  @ApiOperation({ description: 'Get car by id.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get(':carId')
@@ -152,6 +165,20 @@ export class CarsController {
     return CarMapper.toResponseListItemDTO(result);
   }
 
+  @ApiOperation({ description: 'Update car by id' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @UseGuards(AuthorGuard)
+  @Put(':carId')
+  public async update(
+    @Param('carId', ParseUUIDPipe) carId: string,
+    @Body() dto: UpdateCarReqDto,
+  ): Promise<CarUpdateResDto> {
+    const result = await this.carsService.updateCar(carId, dto);
+    return CarMapper.toResponseUpdateDTO(result);
+  }
+
+  @ApiOperation({ description: 'Add photo for the car' })
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('car-photo'))
   @ApiConsumes('multipart/form-data')
@@ -166,6 +193,7 @@ export class CarsController {
     await this.carsService.uploadPhotoCar(carPhoto, carId);
   }
 
+  @ApiOperation({ description: 'Delete photo for the car' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthorGuard)
@@ -176,18 +204,7 @@ export class CarsController {
     await this.carsService.deletePhotoCar(carId);
   }
 
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiBearerAuth()
-  @UseGuards(AuthorGuard)
-  @Put(':carId')
-  public async update(
-    @Param('carId', ParseUUIDPipe) carId: string,
-    @Body() dto: UpdateCarReqDto,
-  ): Promise<CarUpdateResDto> {
-    const result = await this.carsService.updateCar(carId, dto);
-    return CarMapper.toResponseUpdateDTO(result);
-  }
-
+  @ApiOperation({ description: 'Delete car by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -199,6 +216,9 @@ export class CarsController {
     return await this.carsService.removeCar(carId);
   }
 
+  @ApiOperation({
+    description: 'Get views car by id. Only for users with premium account',
+  })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(PremiumGuard)
@@ -207,6 +227,7 @@ export class CarsController {
     return await this.carsService.getCountViews(query);
   }
 
+  @ApiOperation({ description: 'Deactivate car by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -218,6 +239,7 @@ export class CarsController {
     return await this.carsService.deActivateCar(carId);
   }
 
+  @ApiOperation({ description: 'Activate car by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)

@@ -28,7 +28,7 @@ export class BadWordsGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const { userId, email, deviceId } = request.user;
+    const { userId, email, deviceId, role } = request.user;
     let hasBadWordDescription: boolean;
     let hasBadWordTitle: boolean;
     let hasBadWordContent: boolean;
@@ -72,15 +72,11 @@ export class BadWordsGuard implements CanActivate {
           await this.badCountRepository.delete({ user_id: userId });
           await this.authCashService.deleteToken(userId, deviceId);
           await this.refreshTokenRepository.delete({ user_id: userId });
-          try {
-            await this.mailSenderService.sendMail({
-              to: admin.email,
-              subject: 'The email from auto ria.',
-              text: `The user id: ${userId} email: ${email} tried to write bad words 3 times! He is banned!`,
-            });
-          } catch (e) {
-            throw new BadRequestException(e.message);
-          }
+          await this.mailSenderService.sendMail({
+            to: admin.email,
+            subject: 'The email from auto ria.',
+            text: `The user id: ${userId} email: ${email} tried to write bad words 3 times! He is banned!`,
+          });
         }
         throw new BadRequestException('The text has some bad words!');
       } else {

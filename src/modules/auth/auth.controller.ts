@@ -7,7 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { BaseResDto } from '../mail-sender/dto/res/base-res.dto';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -27,12 +27,14 @@ import { AuthService } from './services/auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({ description: 'Create new user' })
   @SkipAuth()
   @Post('sign-up')
   public async signUp(@Body() dto: SignUpReqDto): Promise<AuthResDto> {
     return await this.authService.signUp(dto);
   }
 
+  @ApiOperation({ description: 'Activation user by access token from email' })
   @SkipAuth()
   @Post('activate/:accessToken')
   public async activateUser(
@@ -41,6 +43,7 @@ export class AuthController {
     return await this.authService.activateUser(accessToken);
   }
 
+  @ApiOperation({ description: 'Recovery password' })
   @SkipAuth()
   @Post('recovery-password')
   public async recoveryPassword(
@@ -49,6 +52,7 @@ export class AuthController {
     return await this.authService.recoveryPassword(dto);
   }
 
+  @ApiOperation({ description: 'Change password by access token from email' })
   @SkipAuth()
   @Post('recovery-password/:accessToken')
   public async changePassword(
@@ -58,12 +62,14 @@ export class AuthController {
     return await this.authService.changePassword(accessToken, dto);
   }
 
+  @ApiOperation({ description: 'Login user' })
   @SkipAuth()
   @Post('sign-in')
   public async signIn(@Body() dto: SignInReqDto): Promise<AuthResDto> {
     return await this.authService.signIn(dto);
   }
 
+  @ApiOperation({ description: 'Post refresh token for get new tokens' })
   @ApiBearerAuth()
   @UseGuards(JwtRefreshGuard)
   @SkipAuth()
@@ -74,6 +80,7 @@ export class AuthController {
     return await this.authService.refresh(userData);
   }
 
+  @ApiOperation({ description: 'Log out' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('sign-out')

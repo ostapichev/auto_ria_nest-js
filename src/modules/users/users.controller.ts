@@ -21,6 +21,7 @@ import {
   ApiConsumes,
   ApiForbiddenResponse,
   ApiNoContentResponse,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -41,6 +42,7 @@ import { UsersService } from './services/users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ description: 'Get me data' })
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -51,6 +53,7 @@ export class UsersController {
     return UserMapper.toResponseDTO(result);
   }
 
+  @ApiOperation({ description: 'Edit me data' })
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -65,6 +68,7 @@ export class UsersController {
     return UserMapper.toResponseItemDTO(result);
   }
 
+  @ApiOperation({ description: 'Add balance' })
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -79,6 +83,7 @@ export class UsersController {
     return { message: `Balance ${dto.balance} UAH added!` };
   }
 
+  @ApiOperation({ description: 'Buy premium account' })
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -92,6 +97,7 @@ export class UsersController {
     return { message: 'Premium account took!' };
   }
 
+  @ApiOperation({ description: 'Get basic account' })
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -105,6 +111,7 @@ export class UsersController {
     return { message: 'Basic account took!' };
   }
 
+  @ApiOperation({ description: 'Delete me data' })
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -115,6 +122,7 @@ export class UsersController {
     return await this.usersService.removeMe(userData);
   }
 
+  @ApiOperation({ description: 'Add me avatar' })
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiConsumes('multipart/form-data')
@@ -128,6 +136,7 @@ export class UsersController {
     await this.usersService.uploadAvatar(userData, avatar);
   }
 
+  @ApiOperation({ description: 'Delete me avatar' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('me/avatar')
@@ -135,6 +144,7 @@ export class UsersController {
     await this.usersService.deleteAvatar(userData);
   }
 
+  @ApiOperation({ description: 'Get user by id' })
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Get(':userId')

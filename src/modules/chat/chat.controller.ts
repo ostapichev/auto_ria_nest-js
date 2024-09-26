@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -31,6 +32,7 @@ import { ChatService } from './services/chat.service';
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
+  @ApiOperation({ description: 'Send message to user by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(BadWordsGuard)
@@ -43,6 +45,7 @@ export class ChatController {
     return await this.chatService.sendMessage(userData, to_user_id, dto);
   }
 
+  @ApiOperation({ description: 'Get sent messages to user by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get(':to_user_id/sent_messages')
@@ -53,6 +56,7 @@ export class ChatController {
     return await this.chatService.findSentMessagesToUser(userData, to_user_id);
   }
 
+  @ApiOperation({ description: 'Get message from user by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get(':from_user_id/get_messages')
@@ -63,6 +67,7 @@ export class ChatController {
     return await this.chatService.findGetMessagesToUser(userData, from_user_id);
   }
 
+  @ApiOperation({ description: 'Edit message by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(AuthorGuard)
@@ -74,6 +79,7 @@ export class ChatController {
     return await this.chatService.editMessage(messageId, dto);
   }
 
+  @ApiOperation({ description: 'Delete message by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @UseGuards(AuthorGuard)

@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -41,6 +42,7 @@ import { AdminPanelService } from './services/admin_panel.service';
 export class AdminPanelController {
   constructor(private readonly adminPanelService: AdminPanelService) {}
 
+  @ApiOperation({ description: 'Get list all users' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AdminGuard)
   @Get()
@@ -51,6 +53,7 @@ export class AdminPanelController {
     return UserMapper.toResponseListDTO(entities, total, query);
   }
 
+  @ApiOperation({ description: 'Get user by id for administrators' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AdminGuard, IdMeGuard)
   @Get(':userId')
@@ -60,6 +63,7 @@ export class AdminPanelController {
     return await this.adminPanelService.findOne(userId);
   }
 
+  @ApiOperation({ description: 'Get sent messages chat from user by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AdminGuard)
   @Get('chat_from/:userId')
@@ -69,6 +73,7 @@ export class AdminPanelController {
     return await this.adminPanelService.getFromUserMessages(userId);
   }
 
+  @ApiOperation({ description: 'Get messages from chat to user by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AdminGuard)
   @Get('chat_to/:userId')
@@ -78,6 +83,7 @@ export class AdminPanelController {
     return await this.adminPanelService.getUserMessages(userId);
   }
 
+  @ApiOperation({ description: 'User to admin' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(SuperUserGuard, IdMeGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -88,6 +94,7 @@ export class AdminPanelController {
     await this.adminPanelService.toAdmin(userId);
   }
 
+  @ApiOperation({ description: 'Admin to user' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(SuperUserGuard, IdMeGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -98,6 +105,7 @@ export class AdminPanelController {
     await this.adminPanelService.toUser(userId);
   }
 
+  @ApiOperation({ description: 'Ban user by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AdminGuard, IdMeGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -109,6 +117,7 @@ export class AdminPanelController {
     await this.adminPanelService.banUser(userId, userData);
   }
 
+  @ApiOperation({ description: 'Unban user by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AdminGuard, IdMeGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -120,6 +129,7 @@ export class AdminPanelController {
     await this.adminPanelService.unbanUser(userId, userData);
   }
 
+  @ApiOperation({ description: 'Add city on the db' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AdminGuard)
   @Post('add-city')
@@ -127,6 +137,7 @@ export class AdminPanelController {
     return await this.adminPanelService.addCity(dto);
   }
 
+  @ApiOperation({ description: 'Add brand on the db' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AdminGuard)
   @Post('add-brand')
@@ -136,6 +147,7 @@ export class AdminPanelController {
     return await this.adminPanelService.addCarBrand(dto);
   }
 
+  @ApiOperation({ description: 'Add model in the brand on the db' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AdminGuard)
   @Post(':brandId/add-model')

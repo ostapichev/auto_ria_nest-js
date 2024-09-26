@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -14,6 +15,7 @@ export class MailSenderController {
   constructor(private readonly mailService: MailSenderService) {}
 
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOperation({ description: 'Send email' })
   @ApiBearerAuth()
   @ApiTags('Mail Sender')
   @Post('send')
