@@ -28,7 +28,7 @@ export class BadWordsGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const { userId, email, deviceId, role } = request.user;
+    const { userId, email, deviceId } = request.user;
     let hasBadWordDescription: boolean;
     let hasBadWordTitle: boolean;
     let hasBadWordContent: boolean;
