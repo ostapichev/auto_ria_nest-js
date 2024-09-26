@@ -73,7 +73,7 @@ export class CarsController {
     return CarMapper.toResponseDTO(result);
   }
 
-  @ApiOperation({ description: 'Get all cars' })
+  @ApiOperation({ description: 'Get list all cars' })
   @SkipAuth()
   @Get()
   public async getListAllCars(
@@ -83,7 +83,7 @@ export class CarsController {
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
-  @ApiOperation({ description: 'Get all cars in the city' })
+  @ApiOperation({ description: 'Get list all cars in the city' })
   @SkipAuth()
   @Get('city/:cityId')
   public async getListCarsCity(
@@ -97,7 +97,7 @@ export class CarsController {
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
-  @ApiOperation({ description: 'Get all cars from the user' })
+  @ApiOperation({ description: 'Get list all cars from the user' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get('user-car')
@@ -112,7 +112,7 @@ export class CarsController {
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
-  @ApiOperation({ description: 'Get all cities' })
+  @ApiOperation({ description: 'Get list all cities' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get('cities')
@@ -120,7 +120,7 @@ export class CarsController {
     return await this.carsService.getListAllCities();
   }
 
-  @ApiOperation({ description: 'Get all brands' })
+  @ApiOperation({ description: 'Get list all brands' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get('brands')
@@ -143,7 +143,7 @@ export class CarsController {
     return await this.carsService.getAvgPrice(query, currencies);
   }
 
-  @ApiOperation({ description: 'Get models in the brand' })
+  @ApiOperation({ description: 'Get list models in the brand' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get(':brandId/models')
