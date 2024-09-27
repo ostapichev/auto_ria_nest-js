@@ -89,7 +89,7 @@ export class AuthService {
       subject: 'The email from auto ria for recovery password',
       text: `For recovery password push to link: http://localhost:3000/auth/recovery-password/${tokens.accessToken}`,
     });
-    return { message: `Check message on your ${email}!` };
+    return { message: `Check message in ${email}!` };
   }
 
   public async changePassword(
