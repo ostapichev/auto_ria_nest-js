@@ -4,7 +4,6 @@ import { IsNotEmpty, IsString } from 'class-validator';
 import { BaseUserReqDto } from '../../../users/dto/req/base-user.req.dto';
 
 export class BaseAuthReqDto extends PickType(BaseUserReqDto, [
-  'image',
   'name',
   'phone',
   'email',

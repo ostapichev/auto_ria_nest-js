@@ -1,26 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Length,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsNumber, IsString, Length, Max, Min } from 'class-validator';
 
 import { TransformHelper } from '../../../../common';
 import { ColorCarEnum } from '../../../../database/entities/enums';
 import { CurrencyEnum } from '../../../currency-rate/enums/currency.enum';
 
 export class BaseCarReqDto {
-  @ApiProperty({ example: 'http://localhost:3000/images/car_photo.png' })
-  @IsOptional()
-  @IsString()
-  @Length(10, 500)
-  photo?: string;
-
   @ApiProperty({ example: 'Car Title' })
   @IsString()
   @Length(3, 50)
@@ -49,7 +35,7 @@ export class BaseCarReqDto {
   @Type(() => String)
   model: string;
 
-  @ApiProperty({ example: 'Car Color' })
+  @ApiProperty({ example: 'red' })
   @IsEnum(ColorCarEnum)
   @Length(2, 20)
   @Transform(TransformHelper.trim)

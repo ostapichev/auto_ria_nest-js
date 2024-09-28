@@ -5,11 +5,11 @@ import { IsNumber, IsOptional, IsUUID } from 'class-validator';
 import { TransformHelper } from '../../../../common';
 
 export class CarViewReqDto {
-  @ApiProperty({ example: '4258725c-3f5b-4bda-9ad5-3838192e9d87' })
+  @ApiProperty()
   @Transform(TransformHelper.trim)
   @Transform(TransformHelper.toLowerCase)
   @IsUUID()
-  @Type(() => String)
+  @Type(() => IsUUID)
   carId: string;
 
   @ApiProperty({ example: 30 })

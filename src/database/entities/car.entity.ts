@@ -45,7 +45,7 @@ export class CarEntity extends CreateUpdateModel {
   year: number;
 
   @Column('boolean', { default: true })
-  active: boolean;
+  is_active: boolean;
 
   @Column('string', { nullable: true })
   brand_id: string;

@@ -9,6 +9,9 @@ export class MessageEntity extends CreateUpdateModel {
   @Column('text')
   content: string;
 
+  @Column('boolean', { default: false })
+  is_read: boolean;
+
   @ManyToOne(() => UserEntity, (user) => user.send_messages, {
     onDelete: 'CASCADE',
   })

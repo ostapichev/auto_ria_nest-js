@@ -52,7 +52,7 @@ export class CarMapper {
       update_price: Number(entity.update_price),
       currency: entity.currency,
       year: Number(entity.year),
-      active: entity.active,
+      active: entity.is_active,
       created: entity.created,
       updated: entity.updated,
       start_currencies_rate: entity.start_currencies_rate.map(
@@ -74,7 +74,7 @@ export class CarMapper {
       update_price: Number(entity.update_price),
       currency: entity.currency,
       year: Number(entity.year),
-      active: entity.active,
+      active: entity.is_active,
       created: entity.created,
       updated: entity.updated,
       user_id: entity.user_id,

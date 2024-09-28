@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { UserEntity } from '../../../database/entities';
+import { MessageEntity, UserEntity } from '../../../database/entities';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { BaseResDto } from '../../mail-sender/dto/res/base-res.dto';
 import { MessageRepository } from '../../repository/services/message.repository';
@@ -32,6 +32,17 @@ export class ChatService {
         from_user_id: userData.userId,
       }),
     );
+  }
+
+  public async getMessageById(
+    messageId: string,
+    userId: string,
+  ): Promise<BaseMessageResDto> {
+    const message = await this.messageRepository.findOneBy({ id: messageId });
+    if (!message.is_read && message.to_user_id === userId) {
+      await this.messageRepository.update(messageId, { is_read: true });
+    }
+    return message;
   }
 
   public async findSentMessagesToUser(
@@ -73,16 +84,24 @@ export class ChatService {
     dto: BaseMessageReqDto,
   ): Promise<BaseMessageResDto> {
     const message = await this.messageRepository.findOneBy({ id: messageId });
-    if (!message) {
-      throw new NotFoundException('The message does not exist!');
-    }
     this.messageRepository.merge(message, dto);
     return await this.messageRepository.save(message);
   }
 
   public async deleteMessage(messageId: string): Promise<BaseResDto> {
-    await this.messageRepository.delete(messageId);
+    const message = await this.messageRepository.findOneBy({ id: messageId });
+    await this.messageRepository.delete(message.id);
     return { message: 'Message deleted successfully!' };
+  }
+
+  private async getMessage(messageId: string): Promise<MessageEntity> {
+    const message = await this.messageRepository.findOne({
+      where: { id: messageId },
+    });
+    if (!message) {
+      throw new NotFoundException('The message does not exist!');
+    }
+    return message;
   }
 
   private async findUserCorrect(

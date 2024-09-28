@@ -185,7 +185,7 @@ export class CarsService {
   ): Promise<number> {
     const { currency, cityId } = query;
     const cars = await this.carRepository.find({
-      where: { city_id: cityId, active: true },
+      where: { city_id: cityId, is_active: true },
     });
     const totalPrice = cars.reduce((sum, car) => {
       let price = car.update_price;
@@ -228,18 +228,18 @@ export class CarsService {
 
   public async deActivateCar(carId: string): Promise<void> {
     const car = await this.getCar(carId);
-    if (car.active === false) {
+    if (car.is_active === false) {
       throw new BadRequestException('The car is already not active!');
     }
-    await this.carRepository.update(carId, { active: false });
+    await this.carRepository.update(carId, { is_active: false });
   }
 
   public async activateCar(carId: string): Promise<void> {
     const car = await this.getCar(carId);
-    if (car.active === true) {
+    if (car.is_active === true) {
       throw new BadRequestException('The car is already active!');
     }
-    await this.carRepository.update(carId, { active: true });
+    await this.carRepository.update(carId, { is_active: true });
   }
 
   public async removeCar(carId: string): Promise<void> {

@@ -5,4 +5,5 @@ export enum ColorCarEnum {
   'BLUE' = 'blue',
   'YELLOW' = 'yellow',
   'GRAY' = 'gray',
+  'GREEN' = 'green',
 }

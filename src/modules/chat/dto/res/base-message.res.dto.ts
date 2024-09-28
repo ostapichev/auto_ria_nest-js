@@ -14,6 +14,12 @@ export class BaseMessageResDto {
   content: string;
 
   @ApiProperty({
+    example: false,
+    description: 'Is read status the message',
+  })
+  is_read: boolean;
+
+  @ApiProperty({
     example: '17648de5-d528-42b2-b392-c4e863e08f6c',
     description: 'To user id',
   })

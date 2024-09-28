@@ -19,13 +19,6 @@ import {
 } from '../../../../database/entities/enums';
 
 export class BaseUserReqDto {
-  @ApiProperty({ example: 'http://localhost:3000/images/avatar.png' })
-  @IsOptional()
-  @IsString()
-  @Length(10, 500)
-  @Type(() => String)
-  image?: string;
-
   @ApiProperty({ example: 'John' })
   @IsString()
   @Length(2, 50)

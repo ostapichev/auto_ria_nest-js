@@ -6,12 +6,12 @@ import { TransformHelper } from '../../../../common';
 import { CurrencyEnum } from '../../../currency-rate/enums/currency.enum';
 
 export class CityCurrencyQueryDto {
-  @ApiProperty({ example: '4258725c-3f5b-4bda-9ad5-3838192e9d87' })
+  @ApiProperty()
   @Transform(TransformHelper.trim)
   @Transform(TransformHelper.toLowerCase)
   @IsUUID()
   @IsOptional()
-  @Type(() => String)
+  @Type(() => IsUUID)
   cityId?: string = null;
 
   @ApiProperty({ example: CurrencyEnum.USD })

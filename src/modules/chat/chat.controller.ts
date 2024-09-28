@@ -45,6 +45,17 @@ export class ChatController {
     return await this.chatService.sendMessage(userData, to_user_id, dto);
   }
 
+  @ApiOperation({ description: 'Get message by id from author' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @Get(':messageId')
+  public async getMessageById(
+    @CurrentUser() userData: IUserData,
+    @Param('messageId', ParseUUIDPipe) messageId: string,
+  ): Promise<BaseMessageResDto> {
+    return await this.chatService.getMessageById(messageId, userData.userId);
+  }
+
   @ApiOperation({ description: 'Get sent messages to user by id' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
