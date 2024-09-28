@@ -6,7 +6,6 @@ import {
   IsEnum,
   isEnum,
   IsNumber,
-  IsOptional,
   IsString,
   Length,
   Matches,
