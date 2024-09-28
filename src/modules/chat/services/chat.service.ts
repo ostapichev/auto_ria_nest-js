@@ -37,12 +37,12 @@ export class ChatService {
   public async getMessageById(
     messageId: string,
     userId: string,
-  ): Promise<BaseMessageResDto> {
-    const message = await this.messageRepository.findOneBy({ id: messageId });
+  ): Promise<MessageEntity> {
+    const message = await this.getMessage(messageId);
     if (!message.is_read && message.to_user_id === userId) {
       await this.messageRepository.update(messageId, { is_read: true });
     }
-    return message;
+    return await this.messageRepository.findOneBy({ id: message.id });
   }
 
   public async findSentMessagesToUser(
@@ -83,21 +83,19 @@ export class ChatService {
     messageId: string,
     dto: BaseMessageReqDto,
   ): Promise<BaseMessageResDto> {
-    const message = await this.messageRepository.findOneBy({ id: messageId });
+    const message = await this.getMessage(messageId);
     this.messageRepository.merge(message, dto);
     return await this.messageRepository.save(message);
   }
 
   public async deleteMessage(messageId: string): Promise<BaseResDto> {
-    const message = await this.messageRepository.findOneBy({ id: messageId });
+    const message = await this.getMessage(messageId);
     await this.messageRepository.delete(message.id);
     return { message: 'Message deleted successfully!' };
   }
 
   private async getMessage(messageId: string): Promise<MessageEntity> {
-    const message = await this.messageRepository.findOne({
-      where: { id: messageId },
-    });
+    const message = await this.messageRepository.findOneBy({ id: messageId });
     if (!message) {
       throw new NotFoundException('The message does not exist!');
     }

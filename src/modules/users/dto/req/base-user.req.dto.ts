@@ -4,7 +4,6 @@ import {
   IsBoolean,
   IsEmail,
   IsEnum,
-  isEnum,
   IsNumber,
   IsString,
   Length,
@@ -52,13 +51,13 @@ export class BaseUserReqDto {
   @ApiProperty({ example: 'user_buy' })
   @IsEnum(UserRoleEnum)
   @Length(3, 50)
-  @Type(() => isEnum)
+  @Type(() => IsEnum)
   role?: UserRoleEnum;
 
   @ApiProperty({ example: 'basic' })
   @IsEnum(AccountTypeEnum)
   @Length(3, 50)
-  @Type(() => isEnum)
+  @Type(() => IsEnum)
   account?: AccountTypeEnum;
 
   @ApiProperty({ example: 0 })
