@@ -45,7 +45,7 @@ export class ChatController {
     return await this.chatService.sendMessage(userData, to_user_id, dto);
   }
 
-  @ApiOperation({ description: 'Get message by id from author' })
+  @ApiOperation({ description: 'Get message' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBearerAuth()
   @Get(':messageId')
