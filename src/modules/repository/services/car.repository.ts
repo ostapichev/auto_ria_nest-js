@@ -22,23 +22,16 @@ export class CarRepository extends Repository<CarEntity> {
     return await this.qbHelper(qb, query);
   }
 
-  public async getListCarsCity(
-    cityId: string,
-    query: ListQueryDto,
-  ): Promise<[CarEntity[], number]> {
-    const qb = this.createQueryBuilder('car');
-    qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
-    qb.leftJoinAndSelect('car.user', 'user');
-    qb.andWhere('car.city_id = :cityId', { cityId });
-    return await this.qbHelper(qb, query);
-  }
-
   public async getListAllCars(
     query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     const qb = this.createQueryBuilder('car');
     qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
-    qb.andWhere('car.active != :active', { active: false });
+    qb.leftJoinAndSelect('car.user', 'user');
+    qb.andWhere('car.is_active != :is_active', { is_active: false });
+    if (query.cityId) {
+      qb.andWhere('car.city_id = :cityId', { cityId: query.cityId });
+    }
     return await this.qbHelper(qb, query);
   }
 

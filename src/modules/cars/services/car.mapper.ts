@@ -28,6 +28,7 @@ export class CarMapper {
       description: entity.description,
       city: entity.city_id,
       brand: entity.brand_id,
+      color: entity.color,
       start_price: entity.start_price,
       update_price: entity.update_price,
       currency: entity.currency,

@@ -8,7 +8,7 @@ import { AppModule } from './modules/app.module';
 import { SuperUserService } from './modules/users/services/super-user.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
   const configService = app.get(ConfigService);
   const appConfig = configService.get<AppConfig>('app');
   const config = new DocumentBuilder()

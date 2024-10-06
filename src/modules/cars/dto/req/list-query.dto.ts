@@ -1,5 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator';
 
 import { TransformHelper } from '../../../../common';
 
@@ -23,4 +24,12 @@ export class ListQueryDto {
   @IsOptional()
   @Type(() => String)
   search?: string;
+
+  @ApiProperty()
+  @Transform(TransformHelper.trim)
+  @Transform(TransformHelper.toLowerCase)
+  @IsOptional()
+  @IsUUID()
+  @Type(() => IsUUID)
+  cityId?: string;
 }

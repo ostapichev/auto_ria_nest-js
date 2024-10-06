@@ -73,27 +73,20 @@ export class CarsController {
     return CarMapper.toResponseDTO(result);
   }
 
-  @ApiOperation({ description: 'Get list all cars' })
+  @ApiOperation({ description: 'Get list all cities' })
   @SkipAuth()
-  @Get()
+  @Get('cities')
+  public async getListAllCities(): Promise<CityEntity[]> {
+    return await this.carsService.getListAllCities();
+  }
+
+  @ApiOperation({ description: 'Get list all cars or in the city' })
+  @SkipAuth()
+  @Get(':cityId?')
   public async getListAllCars(
     @Query() query: ListQueryDto,
   ): Promise<CarListResDto> {
     const [entities, total] = await this.carsService.getListAllCars(query);
-    return CarMapper.toResponseListDTO(entities, total, query);
-  }
-
-  @ApiOperation({ description: 'Get list all cars in the city' })
-  @SkipAuth()
-  @Get('city/:cityId')
-  public async getListCarsCity(
-    @Query() query: ListQueryDto,
-    @Param('cityId', ParseUUIDPipe) cityId: string,
-  ): Promise<CarListResDto> {
-    const [entities, total] = await this.carsService.getListCarsCity(
-      cityId,
-      query,
-    );
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
@@ -110,14 +103,6 @@ export class CarsController {
       query,
     );
     return CarMapper.toResponseListDTO(entities, total, query);
-  }
-
-  @ApiOperation({ description: 'Get list all cities' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiBearerAuth()
-  @Get('cities')
-  public async getListAllCities(): Promise<CityEntity[]> {
-    return await this.carsService.getListAllCities();
   }
 
   @ApiOperation({ description: 'Get list all brands' })
