@@ -6,14 +6,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { UserEntity } from '../../../database/entities';
-import {
-  AccountTypeEnum,
-  UserRoleEnum,
-} from '../../../database/entities/enums';
+import { BrandCarEntity, UserEntity } from '../../../database/entities';
+import { AccountTypeEnum, UserRoleEnum } from '../../../database/enums';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
 import { ListQueryDto } from '../../cars/dto/req/list-query.dto';
+import { BaseCityResDto } from '../../cars/dto/res/base-city.res.dto';
+import { BaseModelResDto } from '../../cars/dto/res/base-model.res.dto';
 import { BaseMessageResDto } from '../../chat/dto/res/base-message.res.dto';
 import { BrandRepository } from '../../repository/services/brand.repository';
 import { CityRepository } from '../../repository/services/city.repository';
@@ -24,9 +23,6 @@ import { UserRepository } from '../../repository/services/user.repository';
 import { BaseBrandReqDto } from '../dto/req/base-brand.req.dto';
 import { BaseCityReqDto } from '../dto/req/base-city.req.dto';
 import { BaseModelReqDto } from '../dto/req/base-model.req.dto';
-import { BaseBrandResDto } from '../dto/res/base-brand.res.dto';
-import { BaseCityResDto } from '../dto/res/base-city.res.dto';
-import { BaseModelResDto } from '../dto/res/base-model.res.dto';
 
 @Injectable()
 export class AdminPanelService {
@@ -162,7 +158,7 @@ export class AdminPanelService {
     return await this.cityRepository.save(dto);
   }
 
-  public async addCarBrand(dto: BaseBrandReqDto): Promise<BaseBrandResDto> {
+  public async addCarBrand(dto: BaseBrandReqDto): Promise<BrandCarEntity> {
     const brand = await this.brandRepository.findOneBy({ name: dto.name });
     if (brand) {
       throw new ConflictException('The brand has already exists!');

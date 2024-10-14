@@ -8,12 +8,11 @@ import {
   OneToMany,
 } from 'typeorm';
 
-import { CurrencyEnum } from '../../modules/currency-rate/enums/currency.enum';
+import { ColorCarEnum, CurrencyEnum, TableNameEnum } from '../enums';
 import { BrandCarEntity } from './brand-car.entity';
 import { CarViewsEntity } from './car-views.entity';
 import { CityEntity } from './city.entity';
 import { CurrencyRateEntity } from './currency-rate.entity';
-import { ColorCarEnum, TableNameEnum } from './enums';
 import { ModelCarEntity } from './model-car.entity';
 import { CreateUpdateModel } from './models';
 import { UserEntity } from './user.entity';

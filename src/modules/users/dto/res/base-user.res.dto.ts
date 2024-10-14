@@ -2,8 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import {
   AccountTypeEnum,
+  GenderEnum,
   UserRoleEnum,
-} from '../../../../database/entities/enums';
+} from '../../../../database/enums';
 
 export class BaseUserResDto {
   @ApiProperty({
@@ -41,6 +42,12 @@ export class BaseUserResDto {
     description: 'role user',
   })
   role: UserRoleEnum;
+
+  @ApiProperty({
+    example: 'male',
+    description: 'gender user',
+  })
+  gender: GenderEnum;
 
   @ApiProperty({
     example: 'basic',

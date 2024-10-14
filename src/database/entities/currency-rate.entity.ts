@@ -1,8 +1,7 @@
 import { Column, Entity, ManyToMany } from 'typeorm';
 
-import { CurrencyEnum } from '../../modules/currency-rate/enums/currency.enum';
+import { CurrencyEnum, TableNameEnum } from '../enums';
 import { CarEntity } from './car.entity';
-import { TableNameEnum } from './enums';
 import { CreateUpdateModel } from './models';
 
 @Entity(TableNameEnum.CURRENCIES_RATE)
@@ -14,10 +13,10 @@ export class CurrencyRateEntity extends CreateUpdateModel {
   base_ccy: CurrencyEnum;
 
   @Column('text')
-  buy: number;
+  buy: string;
 
   @Column('text')
-  sale: number;
+  sale: string;
 
   @ManyToMany(() => CarEntity, (entity) => entity.start_currencies_rate)
   cars?: CarEntity[];

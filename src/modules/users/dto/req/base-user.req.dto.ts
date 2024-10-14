@@ -13,8 +13,9 @@ import {
 import { TransformHelper } from '../../../../common';
 import {
   AccountTypeEnum,
+  GenderEnum,
   UserRoleEnum,
-} from '../../../../database/entities/enums';
+} from '../../../../database/enums';
 
 export class BaseUserReqDto {
   @ApiProperty({ example: 'John' })
@@ -53,6 +54,12 @@ export class BaseUserReqDto {
   @Length(3, 50)
   @Type(() => IsEnum)
   role?: UserRoleEnum;
+
+  @ApiProperty({ example: 'male' })
+  @IsEnum(GenderEnum)
+  @Length(3, 50)
+  @Type(() => IsEnum)
+  gender: GenderEnum;
 
   @ApiProperty({ example: 'basic' })
   @IsEnum(AccountTypeEnum)

@@ -3,8 +3,7 @@ import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsNumber, IsString, Length, Max, Min } from 'class-validator';
 
 import { TransformHelper } from '../../../../common';
-import { ColorCarEnum } from '../../../../database/entities/enums';
-import { CurrencyEnum } from '../../../currency-rate/enums/currency.enum';
+import { ColorCarEnum, CurrencyEnum } from '../../../../database/enums';
 
 export class BaseCarReqDto {
   @ApiProperty({ example: 'Car Title' })

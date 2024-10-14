@@ -18,18 +18,17 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { UserEntity } from '../../database/entities';
+import { BrandCarEntity, UserEntity } from '../../database/entities';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
 import { ListQueryDto } from '../cars/dto/req/list-query.dto';
+import { BaseCityResDto } from '../cars/dto/res/base-city.res.dto';
+import { BaseModelResDto } from '../cars/dto/res/base-model.res.dto';
 import { BaseMessageResDto } from '../chat/dto/res/base-message.res.dto';
 import { UserMapper } from '../users/services/user.mapper';
 import { BaseBrandReqDto } from './dto/req/base-brand.req.dto';
 import { BaseCityReqDto } from './dto/req/base-city.req.dto';
 import { BaseModelReqDto } from './dto/req/base-model.req.dto';
-import { BaseBrandResDto } from './dto/res/base-brand.res.dto';
-import { BaseCityResDto } from './dto/res/base-city.res.dto';
-import { BaseModelResDto } from './dto/res/base-model.res.dto';
 import { UserListResDto } from './dto/res/user-list.res.dto';
 import { AdminGuard } from './guards/admin.guard';
 import { IdMeGuard } from './guards/id-me.guard';
@@ -143,7 +142,7 @@ export class AdminPanelController {
   @Post('add-brand')
   public async addCarBrand(
     @Body() dto: BaseBrandReqDto,
-  ): Promise<BaseBrandResDto> {
+  ): Promise<BrandCarEntity> {
     return await this.adminPanelService.addCarBrand(dto);
   }
 

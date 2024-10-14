@@ -12,7 +12,7 @@ import {
   MessageEntity,
   UserEntity,
 } from '../../../database/entities';
-import { UserRoleEnum } from '../../../database/entities/enums';
+import { UserRoleEnum } from '../../../database/enums';
 import { CarRepository } from '../../repository/services/car.repository';
 import { MessageRepository } from '../../repository/services/message.repository';
 

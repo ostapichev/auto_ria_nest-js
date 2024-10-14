@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { badWords } from '../../../common';
 import { UserEntity } from '../../../database/entities';
-import { UserRoleEnum } from '../../../database/entities/enums';
+import { UserRoleEnum } from '../../../database/enums';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
 import { MailSenderService } from '../../mail-sender/services/mail-sender.service';
 import { BadCountRepository } from '../../repository/services/bad-count.repository';

@@ -1,8 +1,13 @@
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 
+import {
+  AccountTypeEnum,
+  GenderEnum,
+  TableNameEnum,
+  UserRoleEnum,
+} from '../enums';
 import { BadCountEntity } from './bad-words-count.entity';
 import { CarEntity } from './car.entity';
-import { AccountTypeEnum, TableNameEnum, UserRoleEnum } from './enums';
 import { MessageEntity } from './message.entity';
 import { CreateUpdateModel } from './models';
 import { RefreshTokenEntity } from './refresh-token.entity';
@@ -23,6 +28,9 @@ export class UserEntity extends CreateUpdateModel {
 
   @Column('text', { select: false })
   password: string;
+
+  @Column('text', { default: GenderEnum.MALE })
+  gender: GenderEnum;
 
   @Column('text', { default: UserRoleEnum.BUYER })
   role: UserRoleEnum;

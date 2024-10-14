@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
+import { TokenType } from '../../../database/enums';
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UserMapper } from '../../users/services/user.mapper';
-import { TokenType } from '../enums/token-type.enum';
 import { TokenService } from '../services/token.service';
 
 @Injectable()

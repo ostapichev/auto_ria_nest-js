@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ColorCarEnum } from '../../../../database/entities/enums';
-import { CurrencyEnum } from '../../../currency-rate/enums/currency.enum';
+import { ColorCarEnum, CurrencyEnum } from '../../../../database/enums';
 
 export class BaseCarResDto {
   @ApiProperty({
@@ -75,13 +74,13 @@ export class BaseCarResDto {
 
   @ApiProperty({
     example: '2021-09-29T10:00:00.000Z',
-    description: 'Article Created Date',
+    description: 'Car Created Date',
   })
   created: Date;
 
   @ApiProperty({
     example: '2021-09-29T10:00:00.000Z',
-    description: 'Article Updated Date',
+    description: 'Car Updated Date',
   })
   updated: Date;
 

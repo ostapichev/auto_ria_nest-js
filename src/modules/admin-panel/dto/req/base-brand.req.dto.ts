@@ -7,7 +7,7 @@ import { TransformHelper } from '../../../../common';
 export class BaseBrandReqDto {
   @ApiProperty({ example: 'Audi' })
   @IsString()
-  @Length(2, 20)
+  @Length(1, 20)
   @Transform(TransformHelper.trim)
   @Transform(TransformHelper.toLowerCase)
   @Type(() => String)

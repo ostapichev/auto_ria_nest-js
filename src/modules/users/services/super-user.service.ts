@@ -4,10 +4,7 @@ import * as bcrypt from 'bcrypt';
 
 import { Config, SuperUserConfig } from '../../../config';
 import { UserEntity } from '../../../database/entities';
-import {
-  AccountTypeEnum,
-  UserRoleEnum,
-} from '../../../database/entities/enums';
+import { AccountTypeEnum, UserRoleEnum } from '../../../database/enums';
 import { UserRepository } from '../../repository/services/user.repository';
 
 @Injectable()

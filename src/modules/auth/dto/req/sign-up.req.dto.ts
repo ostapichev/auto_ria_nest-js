@@ -7,5 +7,6 @@ export class SignUpReqDto extends PickType(BaseAuthReqDto, [
   'phone',
   'email',
   'password',
+  'gender',
   'deviceId',
 ]) {}

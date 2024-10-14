@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
+import { TokenType } from '../../../database/enums';
 import { BaseResDto } from '../../mail-sender/dto/res/base-res.dto';
 import { MailSenderService } from '../../mail-sender/services/mail-sender.service';
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
@@ -17,7 +18,6 @@ import { SignInReqDto } from '../dto/req/sign-in.req.dto';
 import { SignUpReqDto } from '../dto/req/sign-up.req.dto';
 import { AuthResDto } from '../dto/res/auth.res.dto';
 import { TokenPairResDto } from '../dto/res/token-pair.res.dto';
-import { TokenType } from '../enums/token-type.enum';
 import { IUserData } from '../interfaces/user-data.interface';
 import { AuthCacheService } from './auth-cache.service';
 import { TokenService } from './token.service';

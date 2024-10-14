@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
 import { UserEntity } from '../../../database/entities';
-import { AccountTypeEnum } from '../../../database/entities/enums';
+import { AccountTypeEnum } from '../../../database/enums';
 
 @Injectable()
 export class PremiumGuard implements CanActivate {

@@ -9,6 +9,7 @@ import { Between } from 'typeorm';
 import { Config, PrivateBankConfig, TimeZoneConfig } from '../../../config';
 import { CurrencyRateEntity } from '../../../database/entities';
 import { CurrencyRateRepository } from '../../repository/services/currency-rate.repository';
+import { BaseCurrencyRateResDto } from '../dto/res/base-currency-rate.dto';
 
 @Injectable()
 export class CurrencyRateService {
@@ -21,7 +22,7 @@ export class CurrencyRateService {
   @Cron('0 0 * * *', {
     timeZone: 'Europe/Kyiv',
   })
-  public async getExchangeRate(): Promise<CurrencyRateEntity[]> {
+  public async getExchangeRate(): Promise<BaseCurrencyRateResDto[]> {
     const config = this.configService.get<PrivateBankConfig>('apiPrivate');
     const getRatesToday = await this.getCurrencyRate();
     if (getRatesToday.length) {

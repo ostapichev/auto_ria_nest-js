@@ -8,11 +8,11 @@ import {
 import { UserEntity } from '../../../database/entities';
 import {
   AccountTypeEnum,
+  ContentType,
   UserRoleEnum,
-} from '../../../database/entities/enums';
+} from '../../../database/enums';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
-import { ContentType } from '../../file-storage/enums/content-type.enum';
 import { FileStorageService } from '../../file-storage/services/file-storage.service';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UpdateBalanceDto } from '../dto/req/update-balance.dto';

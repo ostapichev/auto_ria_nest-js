@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 
+import { TableNameEnum } from '../enums';
 import { CarEntity } from './car.entity';
-import { TableNameEnum } from './enums';
 import { ModelCarEntity } from './model-car.entity';
 import { CreateUpdateModel } from './models';
 

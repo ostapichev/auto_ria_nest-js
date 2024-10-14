@@ -1,12 +1,12 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
+import { TableNameEnum } from '../enums';
 import { CarEntity } from './car.entity';
-import { TableNameEnum } from './enums';
 import { CreateUpdateModel } from './models';
 
 @Entity(TableNameEnum.CAR_VIEWS)
 export class CarViewsEntity extends CreateUpdateModel {
-  @Column({ default: 0 })
+  @Column('int', { default: 0 })
   viewsCount: number;
 
   @ManyToOne(() => CarEntity, (car) => car.views, { onDelete: 'CASCADE' })

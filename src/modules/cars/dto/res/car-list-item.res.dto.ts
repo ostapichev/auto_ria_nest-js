@@ -11,10 +11,12 @@ export class CarListItemResDto extends PickType(BaseCarResDto, [
   'brand',
   'model',
   'color',
+  'year',
   'start_price',
   'update_price',
   'currency',
   'created',
+  'updated',
   'start_currencies_rate',
   'user_id',
 ]) {}

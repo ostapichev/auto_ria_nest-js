@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
-import { TableNameEnum } from './enums';
+import { TableNameEnum } from '../enums';
 import { CreateUpdateModel } from './models';
 import { UserEntity } from './user.entity';
 

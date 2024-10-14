@@ -9,6 +9,7 @@ export class UserResItemDto extends PickType(BaseUserResDto, [
   'phone',
   'email',
   'role',
+  'gender',
   'account',
   'balance',
   'status',

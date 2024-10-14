@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
 import { UserEntity } from '../../../database/entities';
-import { UserRoleEnum } from '../../../database/entities/enums';
+import { UserRoleEnum } from '../../../database/enums';
 
 @Injectable()
 export class SuperUserGuard implements CanActivate {

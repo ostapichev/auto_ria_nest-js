@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class BaseModelResDto {
   @ApiProperty({
-    example: 'Audi',
-    description: 'Brand name',
+    example: 'q5',
+    description: 'Model name',
   })
   name?: string;
 

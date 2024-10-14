@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { SelectQueryBuilder } from 'typeorm/query-builder/SelectQueryBuilder';
 
-import { CarEntity } from '../../../database/entities';
+import { BrandCarEntity, CarEntity } from '../../../database/entities';
 import { ListQueryDto } from '../../cars/dto/req/list-query.dto';
 
 @Injectable()
@@ -16,8 +16,6 @@ export class CarRepository extends Repository<CarEntity> {
     query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     const qb = this.createQueryBuilder('car');
-    qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
-    qb.leftJoinAndSelect('car.user', 'user');
     qb.where('car.user_id = :userId', { userId });
     return await this.qbHelper(qb, query);
   }
@@ -26,8 +24,6 @@ export class CarRepository extends Repository<CarEntity> {
     query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     const qb = this.createQueryBuilder('car');
-    qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
-    qb.leftJoinAndSelect('car.user', 'user');
     qb.andWhere('car.is_active != :is_active', { is_active: false });
     if (query.cityId) {
       qb.andWhere('car.city_id = :cityId', { cityId: query.cityId });
@@ -47,9 +43,11 @@ export class CarRepository extends Repository<CarEntity> {
     query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
     if (query.search) {
-      qb.andWhere('CONCAT(car.title, car.description) ILIKE :search');
+      qb.andWhere('CONCAT(car.id, car.title, car.description) ILIKE :search');
       qb.setParameter('search', `%${query.search}%`);
     }
+    qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
+    qb.leftJoinAndSelect('car.user', 'user');
     qb.orderBy('car.created', 'DESC');
     qb.take(query.limit);
     qb.skip((query.page - 1) * query.limit);

@@ -29,11 +29,13 @@ export class CarMapper {
       city: entity.city_id,
       brand: entity.brand_id,
       color: entity.color,
+      year: entity.year,
       start_price: entity.start_price,
       update_price: entity.update_price,
       currency: entity.currency,
       model: entity.model_id,
       created: entity.created,
+      updated: entity.updated,
       start_currencies_rate: entity.start_currencies_rate.map(
         (currency_rate) => currency_rate.id,
       ),

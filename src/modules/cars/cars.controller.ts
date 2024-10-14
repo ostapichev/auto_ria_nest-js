@@ -30,12 +30,12 @@ import {
   CityEntity,
   ModelCarEntity,
 } from '../../database/entities';
-import { CityCurrencyQueryDto } from '../admin-panel/dto/req/city-id-req.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
 import { CurrencyRateService } from '../currency-rate/services/currency-rate.service';
 import { CarViewReqDto } from './dto/req/car-view-req.dto';
+import { CityCurrencyQueryDto } from './dto/req/city-id-req.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
 import { ListQueryDto } from './dto/req/list-query.dto';
 import { UpdateCarReqDto } from './dto/req/update-car.dto';
@@ -80,9 +80,25 @@ export class CarsController {
     return await this.carsService.getListAllCities();
   }
 
+  @ApiOperation({ description: 'Get list all brands' })
+  @SkipAuth()
+  @Get('brands')
+  public async getListAllBrands(): Promise<BrandCarEntity[]> {
+    return await this.carsService.getListAllBrands();
+  }
+
+  @ApiOperation({ description: 'Get list models in the brand' })
+  @SkipAuth()
+  @Get(':brandId/models')
+  public async getListAllModels(
+    @Param('brandId', ParseUUIDPipe) brandId: string,
+  ): Promise<ModelCarEntity[]> {
+    return await this.carsService.getListAllModels(brandId);
+  }
+
   @ApiOperation({ description: 'Get list all cars or in the city' })
   @SkipAuth()
-  @Get(':cityId?')
+  @Get()
   public async getListAllCars(
     @Query() query: ListQueryDto,
   ): Promise<CarListResDto> {
@@ -105,14 +121,6 @@ export class CarsController {
     return CarMapper.toResponseListDTO(entities, total, query);
   }
 
-  @ApiOperation({ description: 'Get list all brands' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiBearerAuth()
-  @Get('brands')
-  public async getListAllBrands(): Promise<BrandCarEntity[]> {
-    return await this.carsService.getListAllBrands();
-  }
-
   @ApiOperation({
     description:
       'Get avg price in the city or the all cities. Only for users with premium account',
@@ -126,16 +134,6 @@ export class CarsController {
   ): Promise<number> {
     const currencies = await this.currencyCourseService.getExchangeRate();
     return await this.carsService.getAvgPrice(query, currencies);
-  }
-
-  @ApiOperation({ description: 'Get list models in the brand' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiBearerAuth()
-  @Get(':brandId/models')
-  public async getListAllModels(
-    @Param('brandId', ParseUUIDPipe) brandId: string,
-  ): Promise<ModelCarEntity[]> {
-    return await this.carsService.getListAllModels(brandId);
   }
 
   @ApiOperation({ description: 'Get car by id.' })
