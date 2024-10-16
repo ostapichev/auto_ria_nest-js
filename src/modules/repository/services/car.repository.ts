@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { SelectQueryBuilder } from 'typeorm/query-builder/SelectQueryBuilder';
 
-import { BrandCarEntity, CarEntity } from '../../../database/entities';
+import { CarEntity } from '../../../database/entities';
 import { ListQueryDto } from '../../cars/dto/req/list-query.dto';
 
 @Injectable()
