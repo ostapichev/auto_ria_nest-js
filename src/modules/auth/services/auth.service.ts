@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  BadRequestException, ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -32,7 +32,6 @@ export class AuthService {
     private readonly entityManager: EntityManager,
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly userRepository: UserRepository,
-    private readonly userService: UsersService,
     private readonly tokenService: TokenService,
     private readonly authCacheService: AuthCacheService,
     private readonly mailSenderService: MailSenderService,
@@ -40,8 +39,8 @@ export class AuthService {
 
   public async signUp(dto: SignUpReqDto): Promise<AuthResDto> {
     return await this.entityManager.transaction('SERIALIZABLE', async (em) => {
-      await this.userService.isEmailExistOrThrow(dto.email);
-      await this.userService.isPhoneExistOrThrow(dto.phone);
+      await this.isEmailExistOrThrow(dto.email);
+      await this.isPhoneExistOrThrow(dto.phone);
       const userRepository = em.getRepository(UserEntity);
       const password = await bcrypt.hash(dto.password, 10);
       const user = await userRepository.save(
@@ -155,8 +154,10 @@ export class AuthService {
   }
 
   public async refresh(userData: IUserData): Promise<TokenPairResDto> {
-    await this.deleteRefreshToken(userData);
-    return await this.createTokens(userData.userId, userData.deviceId);
+    return await this.entityManager.transaction('SERIALIZABLE', async (em) => {
+      await this.deleteRefreshToken(userData);
+      return await this.createTokens(userData.userId, userData.deviceId, em);
+    });
   }
 
   public async signOut(userData: IUserData): Promise<void> {
@@ -166,7 +167,7 @@ export class AuthService {
   private async createTokens(
     userId: string,
     deviceId: string,
-    em?: EntityManager,
+    em: EntityManager,
   ): Promise<TokenPairResDto> {
     const tokens = await this.tokenService.generateAuthTokens({
       userId,
@@ -193,5 +194,19 @@ export class AuthService {
       }),
       this.authCacheService.deleteToken(userId, deviceId),
     ]);
+  }
+
+  private async isEmailExistOrThrow(email: string): Promise<void> {
+    const user = await this.userRepository.findOneBy({ email });
+    if (user) {
+      throw new ConflictException('Email already exists');
+    }
+  }
+
+  private async isPhoneExistOrThrow(phone: string): Promise<void> {
+    const user = await this.userRepository.findOneBy({ phone });
+    if (user) {
+      throw new ConflictException('Phone already exists');
+    }
   }
 }

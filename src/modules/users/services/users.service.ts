@@ -1,9 +1,10 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
 
 import { UserEntity } from '../../../database/entities';
 import {
@@ -21,6 +22,8 @@ import { UpdateUserDto } from '../dto/req/update-user.dto';
 @Injectable()
 export class UsersService {
   constructor(
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
     private readonly fileStorageService: FileStorageService,
     private readonly userRepository: UserRepository,
     private readonly authCacheService: AuthCacheService,
@@ -58,16 +61,19 @@ export class UsersService {
   }
 
   public async getPremium(userData: IUserData, sum: number): Promise<void> {
-    const user = await this.userRepository.findOneBy({ id: userData.userId });
-    if (!user || user.account === 'premium') {
-      throw new NotFoundException('The user does not exist!');
-    }
-    if (user.balance < sum) {
-      throw new BadRequestException('Balance is low!');
-    }
-    await this.userRepository.decrement({ id: user.id }, 'balance', sum);
-    await this.userRepository.update(user.id, {
-      account: AccountTypeEnum.PREMIUM,
+    await this.entityManager.transaction('SERIALIZABLE', async (em) => {
+      const userRepository = em.getRepository(UserEntity);
+      const user = await this.userRepository.findOneBy({ id: userData.userId });
+      if (!user || user.account === 'premium') {
+        throw new NotFoundException('The user does not exist!');
+      }
+      if (user.balance < sum) {
+        throw new BadRequestException('Balance is low!');
+      }
+      await userRepository.decrement({ id: user.id }, 'balance', sum);
+      await userRepository.update(user.id, {
+        account: AccountTypeEnum.PREMIUM,
+      });
     });
   }
 
@@ -82,8 +88,14 @@ export class UsersService {
   }
 
   public async removeMe(userData: IUserData): Promise<void> {
-    await this.userRepository.delete({ id: userData.userId });
-    await this.authCacheService.deleteToken(userData.userId, userData.deviceId);
+    await this.entityManager.transaction('SERIALIZABLE', async (em) => {
+      const userRepository = em.getRepository(UserEntity);
+      await userRepository.delete({ id: userData.userId });
+      await this.authCacheService.deleteToken(
+        userData.userId,
+        userData.deviceId,
+      );
+    });
   }
 
   public async findOne(userId: string): Promise<UserEntity> {
@@ -113,20 +125,6 @@ export class UsersService {
       await this.userRepository.save(
         this.userRepository.merge(user, { image: null }),
       );
-    }
-  }
-
-  public async isEmailExistOrThrow(email: string): Promise<void> {
-    const user = await this.userRepository.findOneBy({ email });
-    if (user) {
-      throw new ConflictException('Email already exists');
-    }
-  }
-
-  public async isPhoneExistOrThrow(phone: string): Promise<void> {
-    const user = await this.userRepository.findOneBy({ phone });
-    if (user) {
-      throw new ConflictException('Phone already exists');
     }
   }
 }

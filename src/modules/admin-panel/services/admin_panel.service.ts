@@ -5,8 +5,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
 
-import { BrandCarEntity, UserEntity } from '../../../database/entities';
+import { BrandCarEntity, RefreshTokenEntity, UserEntity } from '../../../database/entities';
 import { AccountTypeEnum, UserRoleEnum } from '../../../database/enums';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
@@ -27,6 +29,8 @@ import { BaseModelReqDto } from '../dto/req/base-model.req.dto';
 @Injectable()
 export class AdminPanelService {
   constructor(
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
     private readonly userRepository: UserRepository,
     private readonly cityRepository: CityRepository,
     private readonly brandRepository: BrandRepository,
@@ -56,10 +60,7 @@ export class AdminPanelService {
   public async getFromUserMessages(
     userId: string,
   ): Promise<BaseMessageResDto[]> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
+    const user = await this.getUser(userId);
     if (user.role === UserRoleEnum.SUPERUSER) {
       throw new ForbiddenException('No permission to perform this user!');
     }
@@ -69,10 +70,7 @@ export class AdminPanelService {
   }
 
   public async getUserMessages(userId: string): Promise<BaseMessageResDto[]> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
+    const user = await this.getUser(userId);
     if (user.role === UserRoleEnum.SUPERUSER) {
       throw new ForbiddenException('No permission to perform this user!');
     }
@@ -82,10 +80,7 @@ export class AdminPanelService {
   }
 
   public async toAdmin(userId: string): Promise<void> {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!user) {
-      throw new NotFoundException('The user does not exist!');
-    }
+    const user = await this.getUser(userId);
     if (user.role === UserRoleEnum.ADMIN) {
       throw new BadRequestException('The user is admin!');
     }
@@ -98,10 +93,7 @@ export class AdminPanelService {
   }
 
   public async toUser(userId: string): Promise<void> {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!user) {
-      throw new NotFoundException('The user does not exist!');
-    }
+    const user = await this.getUser(userId);
     if (user.role === UserRoleEnum.SELLER || user.role === UserRoleEnum.BUYER) {
       throw new BadRequestException('The user is no admin!');
     }
@@ -113,30 +105,28 @@ export class AdminPanelService {
   }
 
   public async banUser(userId: string, userData: IUserData): Promise<void> {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!user) {
-      throw new NotFoundException('The user does not exist!');
-    }
-    if (user.role === UserRoleEnum.ADMIN || UserRoleEnum.SUPERUSER) {
-      if (userData.role === UserRoleEnum.ADMIN) {
-        throw new ForbiddenException('You do not have permissions!');
+    await this.entityManager.transaction('SERIALIZABLE', async (em) => {
+      const user = await this.getUser(userId);
+      const userRepository = em.getRepository(UserEntity);
+      const refreshTokenRepository = em.getRepository(RefreshTokenEntity);
+      if (user.role === UserRoleEnum.ADMIN || UserRoleEnum.SUPERUSER) {
+        if (userData.role === UserRoleEnum.ADMIN) {
+          throw new ForbiddenException('You do not have permissions!');
+        }
       }
-    }
-    if (!user.status) {
-      throw new BadRequestException('The user is banned!');
-    }
-    await this.userRepository.update(userId, {
-      status: false,
+      if (!user.status) {
+        throw new BadRequestException('The user is banned!');
+      }
+      await userRepository.update(userId, {
+        status: false,
+      });
+      await this.authCashService.deleteToken(userId, userData.deviceId);
+      await refreshTokenRepository.delete({ user_id: userId });
     });
-    await this.authCashService.deleteToken(userId, userData.deviceId);
-    await this.refreshTokenRepository.delete({ user_id: userId });
   }
 
   public async unbanUser(userId: string, userData: IUserData): Promise<void> {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!user) {
-      throw new NotFoundException('The user does not exist!');
-    }
+    const user = await this.getUser(userId);
     if (user.role === UserRoleEnum.ADMIN || UserRoleEnum.SUPERUSER) {
       if (userData.role === UserRoleEnum.ADMIN) {
         throw new BadRequestException('You do not have permissions!');
@@ -184,5 +174,13 @@ export class AdminPanelService {
         ...dto,
       }),
     );
+  }
+
+  private async getUser(userId: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+    return user;
   }
 }
