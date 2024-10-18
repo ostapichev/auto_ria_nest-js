@@ -18,7 +18,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { BrandCarEntity, UserEntity } from '../../database/entities';
+import { BrandCarEntity } from '../../database/entities';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
 import { ListQueryDto } from '../cars/dto/req/list-query.dto';
@@ -50,16 +50,6 @@ export class AdminPanelController {
   ): Promise<UserListResDto> {
     const [entities, total] = await this.adminPanelService.findAllUsers(query);
     return UserMapper.toResponseListDTO(entities, total, query);
-  }
-
-  @ApiOperation({ description: 'Get user by id for administrators' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @UseGuards(AdminGuard, IdMeGuard)
-  @Get(':userId')
-  public async findOne(
-    @Param('userId', ParseUUIDPipe) userId: string,
-  ): Promise<UserEntity> {
-    return await this.adminPanelService.findOne(userId);
   }
 
   @ApiOperation({ description: 'Get sent messages chat from user by id' })

@@ -2,11 +2,10 @@ import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { Cron } from '@nestjs/schedule';
-import * as moment from 'moment-timezone';
 import { lastValueFrom } from 'rxjs';
 import { Between } from 'typeorm';
 
-import { Config, PrivateBankConfig, TimeZoneConfig } from '../../../config';
+import { Config, PrivateBankConfig } from '../../../config';
 import { CurrencyRateEntity } from '../../../database/entities';
 import { CurrencyRateRepository } from '../../repository/services/currency-rate.repository';
 import { BaseCurrencyRateResDto } from '../dto/res/base-currency-rate.dto';
@@ -50,18 +49,9 @@ export class CurrencyRateService {
     const today = new Date();
     const startOfDay = new Date(today.setHours(0, 0, 0, 0));
     const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-    const config = this.configService.get<TimeZoneConfig>('timeZone');
-    const localDateStart = moment
-      .tz(startOfDay, 'UTC')
-      .tz(config.timeZone)
-      .toDate();
-    const localDateEnd = moment
-      .tz(endOfDay, 'UTC')
-      .tz(config.timeZone)
-      .toDate();
     return await this.currencyRateRepository.find({
       where: {
-        created: Between(localDateStart, localDateEnd),
+        created: Between(startOfDay, endOfDay),
       },
     });
   }

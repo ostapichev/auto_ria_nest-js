@@ -1,5 +1,6 @@
 import {
-  BadRequestException, ConflictException,
+  BadRequestException,
+  ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,7 +15,6 @@ import { MailSenderService } from '../../mail-sender/services/mail-sender.servic
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UserMapper } from '../../users/services/user.mapper';
-import { UsersService } from '../../users/services/users.service';
 import { ChangePassReqDto } from '../dto/req/change-pass.req.dto';
 import { EmailPassRecoveryDto } from '../dto/req/email-pass-recovery.dto';
 import { SignInReqDto } from '../dto/req/sign-in.req.dto';

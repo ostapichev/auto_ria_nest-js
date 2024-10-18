@@ -31,7 +31,6 @@ import { CarViewsRepository } from '../../repository/services/car-viwes.reposito
 import { CityRepository } from '../../repository/services/city.repository';
 import { CurrencyRateRepository } from '../../repository/services/currency-rate.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
-import { UserRepository } from '../../repository/services/user.repository';
 import { CarViewReqDto } from '../dto/req/car-view-req.dto';
 import { CityCurrencyQueryDto } from '../dto/req/city-id-req.dto';
 import { CreateCarReqDto } from '../dto/req/create-car.dto';
@@ -49,7 +48,6 @@ export class CarsService {
     private readonly carViesRepository: CarViewsRepository,
     private readonly brandRepository: BrandRepository,
     private readonly modelRepository: ModelRepository,
-    private readonly userRepository: UserRepository,
     private readonly cityRepository: CityRepository,
     private readonly currencyRateRepository: CurrencyRateRepository,
     private readonly currencyRateService: CurrencyRateService,

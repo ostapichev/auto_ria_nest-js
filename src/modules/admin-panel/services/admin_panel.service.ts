@@ -8,7 +8,11 @@ import {
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 
-import { BrandCarEntity, RefreshTokenEntity, UserEntity } from '../../../database/entities';
+import {
+  BrandCarEntity,
+  RefreshTokenEntity,
+  UserEntity,
+} from '../../../database/entities';
 import { AccountTypeEnum, UserRoleEnum } from '../../../database/enums';
 import { IUserData } from '../../auth/interfaces/user-data.interface';
 import { AuthCacheService } from '../../auth/services/auth-cache.service';
@@ -20,7 +24,6 @@ import { BrandRepository } from '../../repository/services/brand.repository';
 import { CityRepository } from '../../repository/services/city.repository';
 import { MessageRepository } from '../../repository/services/message.repository';
 import { ModelRepository } from '../../repository/services/model.repository';
-import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
 import { BaseBrandReqDto } from '../dto/req/base-brand.req.dto';
 import { BaseCityReqDto } from '../dto/req/base-city.req.dto';
@@ -37,24 +40,12 @@ export class AdminPanelService {
     private readonly modelRepository: ModelRepository,
     private readonly messageRepository: MessageRepository,
     private readonly authCashService: AuthCacheService,
-    private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
   public async findAllUsers(
     query: ListQueryDto,
   ): Promise<[UserEntity[], number]> {
     return await this.userRepository.getListAllUsers(query);
-  }
-
-  public async findOne(userId: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: { cars: true },
-    });
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
-    return user;
   }
 
   public async getFromUserMessages(
