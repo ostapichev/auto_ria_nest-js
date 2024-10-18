@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { SelectQueryBuilder } from 'typeorm/query-builder/SelectQueryBuilder';
 
 import { CarEntity } from '../../../database/entities';
@@ -31,8 +31,9 @@ export class CarRepository extends Repository<CarEntity> {
     return await this.qbHelper(qb, query);
   }
 
-  public async getCar(carId: string): Promise<CarEntity> {
-    const qb = this.createQueryBuilder('car');
+  public async getCar(carId: string, em?: EntityManager): Promise<CarEntity> {
+    const repo = em ? em.getRepository(CarEntity) : this;
+    const qb = repo.createQueryBuilder('car');
     qb.where('car.id = :carId', { carId });
     qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
     return await qb.getOne();

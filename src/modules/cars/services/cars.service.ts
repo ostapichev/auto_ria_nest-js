@@ -4,8 +4,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
 import * as moment from 'moment';
-import { Between } from 'typeorm';
+import { Between, EntityManager } from 'typeorm';
 
 import {
   BrandCarEntity,
@@ -13,6 +14,7 @@ import {
   CarViewsEntity,
   CityEntity,
   ModelCarEntity,
+  UserEntity,
 } from '../../../database/entities';
 import {
   AccountTypeEnum,
@@ -40,6 +42,8 @@ import { IParams } from '../interfaces/params.interface';
 @Injectable()
 export class CarsService {
   constructor(
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
     private readonly carRepository: CarRepository,
     private readonly fileStorageService: FileStorageService,
     private readonly carViesRepository: CarViewsRepository,
@@ -56,40 +60,47 @@ export class CarsService {
     dto: CreateCarReqDto,
     params: IParams,
   ): Promise<CarEntity> {
-    await this.currencyRateService.getExchangeRate();
-    const formattedDate = moment().format('YYYY-MM-DD');
-    const startDate = moment(formattedDate).startOf('day').toDate();
-    const endDate = moment(formattedDate).endOf('day').toDate();
-    const currenciesRate = await this.currencyRateRepository.find({
-      where: { created: Between(startDate, endDate) },
-    });
-    const { cityId, brandId, modelId } = params;
-    const { cars, userId, role, account } = userData;
-    const city = await this.cityRepository.findOneBy({ id: cityId });
-    const brand = await this.brandRepository.findOneBy({ id: brandId });
-    const model = await this.modelRepository.findOneBy({ id: modelId });
-    if (!city || !brand || !model) {
-      throw new BadRequestException('Incorrect data!');
-    }
-    if (cars.length < 1 || account === AccountTypeEnum.PREMIUM) {
-      if (role === UserRoleEnum.BUYER) {
-        await this.userRepository.update(userId, {
-          role: UserRoleEnum.SELLER,
-        });
+    return await this.entityManager.transaction('SERIALIZABLE', async (em) => {
+      await this.currencyRateService.getExchangeRate();
+      const carRepository = em.getRepository(CarEntity);
+      const userRepository = em.getRepository(UserEntity);
+      const cityRepository = em.getRepository(CityEntity);
+      const brandRepository = em.getRepository(BrandCarEntity);
+      const modelRepository = em.getRepository(ModelCarEntity);
+      const formattedDate = moment().format('YYYY-MM-DD');
+      const startDate = moment(formattedDate).startOf('day').toDate();
+      const endDate = moment(formattedDate).endOf('day').toDate();
+      const currenciesRate = await this.currencyRateRepository.find({
+        where: { created: Between(startDate, endDate) },
+      });
+      const { cityId, brandId, modelId } = params;
+      const { cars, userId, role, account } = userData;
+      const city = await cityRepository.findOneBy({ id: cityId });
+      const brand = await brandRepository.findOneBy({ id: brandId });
+      const model = await modelRepository.findOneBy({ id: modelId });
+      if (!city || !brand || !model) {
+        throw new BadRequestException('Incorrect data!');
       }
-      return await this.carRepository.save(
-        this.carRepository.create({
-          ...dto,
-          update_price: dto.start_price,
-          user_id: userId,
-          city_id: cityId,
-          brand_id: brandId,
-          model_id: modelId,
-          start_currencies_rate: currenciesRate,
-        }),
-      );
-    }
-    throw new ForbiddenException('Buy premium!');
+      if (cars.length < 1 || account === AccountTypeEnum.PREMIUM) {
+        if (role === UserRoleEnum.BUYER) {
+          await userRepository.update(userId, {
+            role: UserRoleEnum.SELLER,
+          });
+        }
+        return await carRepository.save(
+          this.carRepository.create({
+            ...dto,
+            update_price: dto.start_price,
+            user_id: userId,
+            city_id: cityId,
+            brand_id: brandId,
+            model_id: modelId,
+            start_currencies_rate: currenciesRate,
+          }),
+        );
+      }
+      throw new ForbiddenException('Buy premium!');
+    });
   }
 
   public async getListCarsUser(
@@ -109,16 +120,19 @@ export class CarsService {
     carId: string,
     userData: IUserData,
   ): Promise<CarEntity> {
-    const car = await this.getCar(carId);
-    if (userData.userId !== car.user_id) {
-      await this.carViesRepository.save(
-        this.carViesRepository.create({
-          viewsCount: 1,
-          car_id: carId,
-        }),
-      );
-    }
-    return car;
+    return await this.entityManager.transaction('SERIALIZABLE', async (em) => {
+      const carViesRepository = em.getRepository(CarViewsEntity);
+      const car = await this.getCar(carId, em);
+      if (userData.userId !== car.user_id) {
+        await carViesRepository.save(
+          this.carViesRepository.create({
+            viewsCount: 1,
+            car_id: carId,
+          }),
+        );
+      }
+      return car;
+    });
   }
 
   public async uploadPhotoCar(
@@ -234,11 +248,14 @@ export class CarsService {
   }
 
   public async removeCar(carId: string): Promise<void> {
-    await this.carRepository.delete({ id: carId });
+    await this.entityManager.transaction('SERIALIZABLE', async (em) => {
+      const carRepository = em.getRepository(CarEntity);
+      await carRepository.delete({ id: carId });
+    });
   }
 
-  private async getCar(carId: string): Promise<CarEntity> {
-    const car = await this.carRepository.getCar(carId);
+  private async getCar(carId: string, em?: EntityManager): Promise<CarEntity> {
+    const car = await this.carRepository.getCar(carId, em);
     if (!car) {
       throw new NotFoundException(`Car not found`);
     }
