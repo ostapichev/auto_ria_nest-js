@@ -215,6 +215,10 @@ export class CarsService {
   }
 
   public async getListAllModels(brandId: string): Promise<ModelCarEntity[]> {
+    const brand = await this.brandRepository.findOneBy({ id: brandId });
+    if (!brand) {
+      throw new NotFoundException('The brand does not exist!');
+    }
     return await this.modelRepository.find({
       where: { brand_id: brandId },
     });

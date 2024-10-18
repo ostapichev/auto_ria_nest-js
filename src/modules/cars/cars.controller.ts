@@ -25,11 +25,6 @@ import {
 } from '@nestjs/swagger';
 
 import { ApiFile } from '../../common';
-import {
-  BrandCarEntity,
-  CityEntity,
-  ModelCarEntity,
-} from '../../database/entities';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { IUserData } from '../auth/interfaces/user-data.interface';
@@ -39,13 +34,19 @@ import { CityCurrencyQueryDto } from './dto/req/city-id-req.dto';
 import { CreateCarReqDto } from './dto/req/create-car.dto';
 import { ListQueryDto } from './dto/req/list-query.dto';
 import { UpdateCarReqDto } from './dto/req/update-car.dto';
+import { BaseBrandResDto } from './dto/res/base-brand.res.dto';
+import { BaseCityResDto } from './dto/res/base-city.res.dto';
+import { BaseModelResDto } from './dto/res/base-model.res.dto';
 import { CarListResDto } from './dto/res/car-list.res.dto';
 import { CarListItemResDto } from './dto/res/car-list-item.res.dto';
 import { CarUpdateResDto } from './dto/res/car-update-res.dto';
 import { AuthorGuard } from './guards/author.guard';
 import { BadWordsGuard } from './guards/bad-words.guard';
 import { PremiumGuard } from './guards/premium.guard';
-import { CarMapper } from './services/car.mapper';
+import { BrandMapper } from './mappers/brand.mapper';
+import { CarMapper } from './mappers/car.mapper';
+import { CityMapper } from './mappers/city.mapper';
+import { ModelMapper } from './mappers/model.mapper';
 import { CarsService } from './services/cars.service';
 
 @ApiTags('Cars')
@@ -76,15 +77,17 @@ export class CarsController {
   @ApiOperation({ description: 'Get list all cities' })
   @SkipAuth()
   @Get('cities')
-  public async getListAllCities(): Promise<CityEntity[]> {
-    return await this.carsService.getListAllCities();
+  public async getListAllCities(): Promise<BaseCityResDto[]> {
+    const entities = await this.carsService.getListAllCities();
+    return CityMapper.toResponseListDTO(entities);
   }
 
   @ApiOperation({ description: 'Get list all brands' })
   @SkipAuth()
   @Get('brands')
-  public async getListAllBrands(): Promise<BrandCarEntity[]> {
-    return await this.carsService.getListAllBrands();
+  public async getListAllBrands(): Promise<BaseBrandResDto[]> {
+    const entities = await this.carsService.getListAllBrands();
+    return BrandMapper.toResponseListDTO(entities);
   }
 
   @ApiOperation({ description: 'Get list models in the brand' })
@@ -92,8 +95,9 @@ export class CarsController {
   @Get(':brandId/models')
   public async getListAllModels(
     @Param('brandId', ParseUUIDPipe) brandId: string,
-  ): Promise<ModelCarEntity[]> {
-    return await this.carsService.getListAllModels(brandId);
+  ): Promise<BaseModelResDto[]> {
+    const entities = await this.carsService.getListAllModels(brandId);
+    return ModelMapper.toResponseListDTO(entities);
   }
 
   @ApiOperation({ description: 'Get list all cars or in the city' })

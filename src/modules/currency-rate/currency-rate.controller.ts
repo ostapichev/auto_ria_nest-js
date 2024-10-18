@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
 import { BaseCurrencyRateResDto } from './dto/res/base-currency-rate.dto';
+import { CurrencyMapper } from './mappers/currensy.mapper';
 import { CurrencyRateService } from './services/currency-rate.service';
 
 @ApiTags('Currency Course')
@@ -14,6 +15,7 @@ export class CurrencyRateController {
   @SkipAuth()
   @Get()
   public async getCurrencyRate(): Promise<BaseCurrencyRateResDto[]> {
-    return await this.currencyCourseService.getExchangeRate();
+    const entities = await this.currencyCourseService.getExchangeRate();
+    return CurrencyMapper.toResponseListDTO(entities);
   }
 }

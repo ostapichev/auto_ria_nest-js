@@ -33,6 +33,7 @@ import { UserListResDto } from './dto/res/user-list.res.dto';
 import { AdminGuard } from './guards/admin.guard';
 import { IdMeGuard } from './guards/id-me.guard';
 import { SuperUserGuard } from './guards/superuser.guard';
+import { MessageMapper } from './mappers/message.mapper';
 import { AdminPanelService } from './services/admin_panel.service';
 
 @ApiBearerAuth()
@@ -59,7 +60,8 @@ export class AdminPanelController {
   public async getFromUserMessages(
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<BaseMessageResDto[]> {
-    return await this.adminPanelService.getFromUserMessages(userId);
+    const entities = await this.adminPanelService.getFromUserMessages(userId);
+    return MessageMapper.toResponseListDTO(entities);
   }
 
   @ApiOperation({ description: 'Get messages from chat to user by id' })
@@ -69,7 +71,8 @@ export class AdminPanelController {
   public async getUserMessages(
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<BaseMessageResDto[]> {
-    return await this.adminPanelService.getUserMessages(userId);
+    const entities = await this.adminPanelService.getUserMessages(userId);
+    return MessageMapper.toResponseListDTO(entities);
   }
 
   @ApiOperation({ description: 'User to admin' })
