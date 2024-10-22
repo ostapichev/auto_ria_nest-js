@@ -1,7 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
-import { Cron } from '@nestjs/schedule';
 import { lastValueFrom } from 'rxjs';
 import { Between } from 'typeorm';
 
@@ -18,9 +17,6 @@ export class CurrencyRateService {
     private readonly configService: ConfigService<Config>,
   ) {}
 
-  @Cron('0 0 * * *', {
-    timeZone: 'Europe/Kyiv',
-  })
   public async getExchangeRate(): Promise<BaseCurrencyRateResDto[]> {
     const config = this.configService.get<PrivateBankConfig>('apiPrivate');
     const getRatesToday = await this.getCurrencyRate();

@@ -16,7 +16,7 @@ import { BaseMessageResDto } from '../dto/res/base-message.res.dto';
 export class ChatService {
   constructor(
     private readonly messageRepository: MessageRepository,
-    private userRepository: UserRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   public async sendMessage(

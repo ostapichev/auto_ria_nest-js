@@ -23,7 +23,6 @@ export class FileStorageService {
     private readonly configService: ConfigService<Config>,
   ) {
     this.awsConfig = this.configService.get<AwsConfig>('aws');
-
     this.s3Client = new S3Client({
       forcePathStyle: true,
       endpoint: this.awsConfig.endpoint,

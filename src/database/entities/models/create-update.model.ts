@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -8,9 +9,18 @@ export class CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   created: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp' })
   updated: Date;
+
+  @BeforeInsert()
+  setCreatedTime() {
+    const localTime = new Date().toLocaleString('en-US', {
+      timeZone: 'Europe/Kyiv',
+    });
+    this.created = new Date(localTime);
+    this.updated = new Date(localTime);
+  }
 }
