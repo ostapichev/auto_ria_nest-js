@@ -5,7 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
+import * as timezone from 'dayjs/plugin/timezone';
+import * as utc from 'dayjs/plugin/utc';
 import { Between, EntityManager } from 'typeorm';
 
 import {
@@ -45,7 +47,7 @@ export class CarsService {
     private readonly entityManager: EntityManager,
     private readonly carRepository: CarRepository,
     private readonly fileStorageService: FileStorageService,
-    private readonly carViesRepository: CarViewsRepository,
+    private readonly carViewsRepository: CarViewsRepository,
     private readonly brandRepository: BrandRepository,
     private readonly modelRepository: ModelRepository,
     private readonly cityRepository: CityRepository,
@@ -59,15 +61,17 @@ export class CarsService {
     params: IParams,
   ): Promise<CarEntity> {
     return await this.entityManager.transaction('SERIALIZABLE', async (em) => {
+      dayjs.extend(utc);
+      dayjs.extend(timezone);
       await this.currencyRateService.getExchangeRate();
       const carRepository = em.getRepository(CarEntity);
       const userRepository = em.getRepository(UserEntity);
       const cityRepository = em.getRepository(CityEntity);
       const brandRepository = em.getRepository(BrandCarEntity);
       const modelRepository = em.getRepository(ModelCarEntity);
-      const formattedDate = moment().format('YYYY-MM-DD');
-      const startDate = moment(formattedDate).startOf('day').toDate();
-      const endDate = moment(formattedDate).endOf('day').toDate();
+      const formattedDate = dayjs().tz(dayjs.tz.guess()).format('YYYY-MM-DD');
+      const startDate = dayjs(formattedDate).startOf('day').toDate();
+      const endDate = dayjs(formattedDate).endOf('day').toDate();
       const currenciesRate = await this.currencyRateRepository.find({
         where: { created: Between(startDate, endDate) },
       });
@@ -119,14 +123,11 @@ export class CarsService {
     userData: IUserData,
   ): Promise<CarEntity> {
     return await this.entityManager.transaction('SERIALIZABLE', async (em) => {
-      const carViesRepository = em.getRepository(CarViewsEntity);
+      const carViewsRepository = em.getRepository(CarViewsEntity);
       const car = await this.getCar(carId, em);
       if (userData.userId !== car.user_id) {
-        await carViesRepository.save(
-          this.carViesRepository.create({
-            viewsCount: 1,
-            car_id: carId,
-          }),
+        await carViewsRepository.save(
+          this.carViewsRepository.create({ car_id: carId }),
         );
       }
       return car;
@@ -156,22 +157,8 @@ export class CarsService {
   }
 
   public async getCountViews(query: CarViewReqDto): Promise<number> {
-    let views: CarViewsEntity[];
-    const { carId, day } = query;
-    const car = await this.getCar(carId);
-    if (day) {
-      const startDate = new Date();
-      const endDate = new Date();
-      startDate.setDate(startDate.getDate() - day);
-      views = await this.carViesRepository.find({
-        where: { car_id: car.id, created: Between(startDate, endDate) },
-      });
-    } else {
-      views = await this.carViesRepository.find({
-        where: { car_id: car.id },
-      });
-    }
-    return views.reduce((acc, obj) => acc + obj.viewsCount, 0);
+    await this.getCar(query.carId);
+    return await this.carViewsRepository.getCountViews(query);
   }
 
   public async getListAllCities(): Promise<CityEntity[]> {

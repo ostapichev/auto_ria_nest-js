@@ -185,7 +185,7 @@ export class CarsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthorGuard)
   @Delete(':carId/car-photo')
-  public async deleteAvatar(
+  public async deletePhotoCar(
     @Param('carId', ParseUUIDPipe) carId: string,
   ): Promise<void> {
     await this.carsService.deletePhotoCar(carId);

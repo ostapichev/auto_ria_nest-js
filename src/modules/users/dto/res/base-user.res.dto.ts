@@ -38,7 +38,7 @@ export class BaseUserResDto {
   email: string;
 
   @ApiProperty({
-    example: 'seller',
+    example: 'buyer',
     description: 'role user',
   })
   role: UserRoleEnum;
