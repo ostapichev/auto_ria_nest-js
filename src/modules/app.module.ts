@@ -17,6 +17,7 @@ import { MailSenderModule } from './mail-sender/mail-sender.module';
 import { PostgresModule } from './postgres/postgres.module';
 import { RedisModule } from './redis/redis.module';
 import { RepositoryModule } from './repository/repository.module';
+import { SocketModule } from './socket/socket.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -39,6 +40,7 @@ import { UsersModule } from './users/users.module';
     CurrencyRateModule,
     MailSenderModule,
     CronModule,
+    SocketModule,
   ],
   providers: [
     {

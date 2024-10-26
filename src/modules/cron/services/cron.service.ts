@@ -15,6 +15,7 @@ export class TasksService {
   public async handleCron(): Promise<void> {
     try {
       await this.currencyRateService.getExchangeRate();
+      this.logger.log('Currency rate updated');
     } catch (error) {
       this.logger.error(error.message);
     }
