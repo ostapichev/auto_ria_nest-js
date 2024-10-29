@@ -25,35 +25,34 @@ export class SocketService
   server: Server;
   private logger: Logger = new Logger('SocketService');
 
-  afterInit(server: Server) {
+  public afterInit(server: Server) {
     this.logger.log('WebSocket Gateway initialized');
   }
 
-  handleConnection(client: Socket) {
+  public handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
   }
 
-  handleDisconnect(client: Socket) {
+  public handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('joinRoom')
-  handleJoinRoom(
+  public async handleJoinRoom(
     @MessageBody() room: string,
     @ConnectedSocket() client: Socket,
-  ): void {
+  ): Promise<void> {
     client.join(room);
     client.emit('joinedRoom', room);
-    this.logger.log(`Client ${client.id} joined room: ${room}`);
+    await this.logger.log(`Client ${client.id} joined room: ${room}`);
   }
 
   @SubscribeMessage('message')
-  handleMessage(
+  public async handleMessage(
     @MessageBody() { room, message }: { room: string; message: string },
     @ConnectedSocket() client: Socket,
-  ): void {
-    this.logger.log(`Client ${client.id} joined room: ${room}`);
-    this.logger.log(`Client send message: ${message}`);
-    this.server.to(room).emit('message', { sender: client.id, message });
+  ): Promise<void> {
+    await this.logger.log(`Client send message: ${message}`);
+    await this.server.to(room).emit('message', { sender: client.id, message });
   }
 }
