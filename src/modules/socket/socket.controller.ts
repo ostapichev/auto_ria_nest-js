@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -13,12 +13,12 @@ export class SocketController {
 
   @SkipAuth()
   @ApiOperation({ description: 'Send message to user by id' })
-  @Post('message')
+  @Post()
   async sendMessage(
     @CurrentUser() userData: IUserData,
     @Body() message: string,
   ): Promise<string> {
-    console.log(message);
+    Logger.log(message);
     this.socketService.server.emit('message', message);
     return 'Message sent';
   }
