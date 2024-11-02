@@ -43,8 +43,12 @@ export class CarRepository extends Repository<CarEntity> {
     qb: SelectQueryBuilder<CarEntity>,
     query: ListQueryDto,
   ): Promise<[CarEntity[], number]> {
+    qb.leftJoinAndSelect('car.brand', 'brand');
+    qb.leftJoinAndSelect('car.model', 'model');
     if (query.search) {
-      qb.andWhere('CONCAT(car.id, car.title, car.description) ILIKE :search');
+      qb.andWhere(
+        'CONCAT(car.id, car.title, car.description, brand.name, model.name) ILIKE :search',
+      );
       qb.setParameter('search', `%${query.search}%`);
     }
     qb.leftJoinAndSelect('car.start_currencies_rate', 'currency_rate');
