@@ -35,7 +35,7 @@ export class BaseUserReqDto {
 
   @ApiProperty({ example: 'test@gmail.com' })
   @IsEmail()
-  @Length(0, 300)
+  @Length(3, 300)
   @Transform(TransformHelper.trim)
   @Matches(/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/)
   @Type(() => IsEmail)
@@ -43,7 +43,7 @@ export class BaseUserReqDto {
 
   @ApiProperty({ example: '123qwe!@#QWE' })
   @IsString()
-  @Length(0, 300)
+  @Length(8, 300)
   @Transform(TransformHelper.trim)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%_*#?&])[A-Za-z\d@$_!%*#?&]{8,}$/)
   @Type(() => String)
