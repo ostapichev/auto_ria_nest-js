@@ -35,7 +35,7 @@ export class BaseUserReqDto {
 
   @ApiProperty({ example: 'test@gmail.com' })
   @IsEmail()
-  @Length(3, 300)
+  @Length(3, 30)
   @Transform(TransformHelper.trim)
   @Matches(/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/)
   @Type(() => IsEmail)
@@ -43,7 +43,7 @@ export class BaseUserReqDto {
 
   @ApiProperty({ example: '123qwe!@#QWE' })
   @IsString()
-  @Length(8, 300)
+  @Length(8, 20)
   @Transform(TransformHelper.trim)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%_*#?&])[A-Za-z\d@$_!%*#?&]{8,}$/)
   @Type(() => String)
@@ -51,19 +51,16 @@ export class BaseUserReqDto {
 
   @ApiProperty({ example: 'user_buy' })
   @IsEnum(UserRoleEnum)
-  @Length(3, 50)
   @Type(() => IsEnum)
   role?: UserRoleEnum;
 
   @ApiProperty({ example: 'male' })
   @IsEnum(GenderEnum)
-  @Length(3, 50)
   @Type(() => IsEnum)
   gender: GenderEnum;
 
   @ApiProperty({ example: 'basic' })
   @IsEnum(AccountTypeEnum)
-  @Length(3, 50)
   @Type(() => IsEnum)
   account?: AccountTypeEnum;
 
