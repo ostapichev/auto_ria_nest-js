@@ -141,7 +141,7 @@ export class AuthService {
         select: { id: true, password: true, status: true },
       });
       if (!user || !user.status) {
-        throw new UnauthorizedException('The user does not exist or is banned');
+        throw new UnauthorizedException('Invalid password or email');
       }
       const isPasswordValid = await bcrypt.compare(dto.password, user.password);
       if (!isPasswordValid) {

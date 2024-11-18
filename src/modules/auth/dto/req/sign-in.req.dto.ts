@@ -1,9 +1,15 @@
-import { PickType } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-import { BaseAuthReqDto } from './base-auth.req.dto';
+export class SignInReqDto {
+  @IsNotEmpty()
+  @IsString()
+  email: string;
 
-export class SignInReqDto extends PickType(BaseAuthReqDto, [
-  'email',
-  'password',
-  'deviceId',
-]) {}
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly deviceId: string;
+}

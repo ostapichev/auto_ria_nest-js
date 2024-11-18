@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  jan-2024-postgres:
+  auto-seller-postgres:
     image: postgres:16.1
     ports:
       - '${POSTGRES_PORT}:5432'
@@ -10,9 +8,9 @@ services:
       POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-password}'
       POSTGRES_DB: '${POSTGRES_DB:-final_project}'
     volumes:
-      - ./jan-2024-api-db:/var/lib/postgresql/jan-2024
+      - ./auto-seller-api-db:/var/lib/postgresql/auto-seller
 
-  jan-2024-redis:
+  auto-seller-redis:
     image: redis:7.2.3
     ports:
       - '${REDIS_PORT:-6379}:6379'
@@ -20,7 +18,7 @@ services:
       --requirepass '${REDIS_PASSWORD:-redispass}'
     restart: unless-stopped
 
-  jan-2024-s3:
+  auto-seller-s3:
     image: quay.io/minio/minio:latest
     command: server /data --console-address ":9001"
     restart: unless-stopped
@@ -28,12 +26,11 @@ services:
       - "8000:9000"
       - "8001:9001"
     volumes:
-      - ./jan-2024-api-s3-data:/usr/src/app/s3
+      - ./auto-seller-api-s3-data:/usr/src/app/s3
     environment:
       - MINIO_ROOT_USER=user            # AWS_S3_ACCESS_KEY
       - MINIO_ROOT_PASSWORD=password    # AWS_S3_SECRET_KEY
 
 volumes:
-  jan-2024-api-db:
-  jan-2024-api-s3:
-
+  auto-seller-api-db:
+  auto-seller-api-s3:
